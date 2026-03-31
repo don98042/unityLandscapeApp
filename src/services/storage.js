@@ -6,7 +6,7 @@ const s3 = new S3Client({ region: process.env.AWS_REGION ?? 'us-east-1' });
 export async function uploadPhoto(buffer) {
   const key = `photos/${new Date().toISOString().slice(0,10)}/${randomUUID()}.jpg`;
   await s3.send(new PutObjectCommand({
-    Bucket:      'field-quote-photos',
+    Bucket:      'unity-landscape-photos',
     Key:         key,
     Body:        buffer,
     ContentType: 'image/jpeg',

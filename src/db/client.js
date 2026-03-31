@@ -6,7 +6,7 @@ let pool;
 export const db = {
   async query(sql, params) {
     if (!pool) {
-      const secret = await getSecret('field-quote/db');
+      const secret = await getSecret('unity-landscape/db');
       pool = new pg.Pool({
         host:     secret.host,
         port:     parseInt(secret.port),

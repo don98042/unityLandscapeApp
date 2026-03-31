@@ -1,30 +1,24 @@
-import { json }         from '../handler.js';
-import { analyzePhoto } from '../services/vision.js';
-import { buildQuote }   from '../services/quoteEngine.js';
-import { uploadPhoto }  from '../services/storage.js';
-import { db }           from '../db/client.js';
+import { respond }       from '../handler.js';
+import { analyzePhoto }  from '../services/vision.js';
+import { buildQuote }    from '../services/quoteEngine.js';
+import { uploadPhoto }   from '../services/storage.js';
+import { db }            from '../db/client.js';
 
 export async function quoteRoute(event) {
-  // Expect multipart/form-data — API Gateway base64-encodes binary
   const body     = Buffer.from(event.body, 'base64');
   const boundary = event.headers['content-type'].split('boundary=')[1];
   const photoBuffer = extractFilePart(body, boundary);
 
-  // 1. Upload annotated photo to S3
   const s3Key = await uploadPhoto(photoBuffer);
 
-  // 2. Get current pricing config from DB
   const { rows: config } = await db.query(
     'SELECT * FROM pricing_config WHERE active = true'
   );
 
-  // 3. Ask AI to analyze the photo
   const aiItems = await analyzePhoto(photoBuffer, config);
 
-  // 4. Apply pricing to AI line items
   const { lineItems, subtotal } = buildQuote(aiItems, config);
 
-  // 5. Persist quote as draft
   const { rows: [quote] } = await db.query(
     `INSERT INTO quotes (photo_s3_key, status, subtotal, total)
      VALUES ($1, 'draft', $2, $2) RETURNING id`,
@@ -42,10 +36,9 @@ export async function quoteRoute(event) {
     );
   }
 
-  return json(200, { quote_id: quote.id, line_items: lineItems });
+  return respond(200, { quote_id: quote.id, line_items: lineItems });
 }
 
-// Minimal multipart parser — pulls out the first file part
 function extractFilePart(buffer, boundary) {
   const sep   = Buffer.from('--' + boundary);
   const parts = [];

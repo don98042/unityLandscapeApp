@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { getSecret } from './secrets.js';
 
 export async function analyzePhoto(photoBuffer, pricingConfig) {
-  const { anthropic_api_key } = await getSecret('field-quote/ai');
+  const { anthropic_api_key } = await getSecret('unity-landscape/ai');
   const client = new Anthropic({ apiKey: anthropic_api_key });
 
   const serviceList = pricingConfig.map(s =>
