@@ -35,7 +35,7 @@ input[type=range]{flex:1;margin:0 2px;accent-color:#aaa}
 .action-btn{padding:6px 11px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none}
 .btn-retake{background:#2a2a2a;color:#aaa}
 .btn-done{background:#2d5c14;color:#a0d060}
-#preview-bar{background:#111;padding:10px 16px 28px;display:flex;gap:8px;flex-shrink:0}
+#preview-bar{background:#111;padding:10px 16px 28px;display:flex;gap:8px;flex-shrink:0;display:none}
 .btn-edit{flex:1;padding:12px 0;border-radius:9px;border:1px solid #555;background:transparent;color:#ccc;font-size:14px;cursor:pointer}
 .btn-submit{flex:2;padding:12px 0;border-radius:9px;border:1px solid #4a8820;background:#2d5c14;color:#a0d060;font-size:14px;font-weight:600;cursor:pointer}
 #label-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;z-index:10}
@@ -49,6 +49,49 @@ input[type=range]{flex:1;margin:0 2px;accent-color:#aaa}
 #toast{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;font-size:13px;padding:8px 16px;border-radius:20px;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap;z-index:20}
 #toast.show{opacity:1}
 #stage-label{font-weight:600;letter-spacing:.08em;font-size:11px}
+
+/* Quote review screen */
+#quote-screen{display:none;flex-direction:column;height:100dvh;background:#f5f4f0;color:#1a1a18;overflow:hidden}
+#quote-screen.show{display:flex}
+#quote-header{background:#fff;padding:14px 16px 10px;border-bottom:1px solid rgba(0,0,0,.08);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+#quote-header h2{font-size:17px;font-weight:600}
+#new-quote-btn{font-size:13px;color:#185FA5;background:none;border:none;cursor:pointer;padding:4px 0}
+#quote-body{flex:1;overflow-y:auto;padding:12px 14px}
+.photo-thumb{width:100%;height:160px;object-fit:cover;border-radius:10px;margin-bottom:12px}
+.section-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;padding:8px 0 4px}
+.line-item{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:11px 12px;margin-bottom:6px}
+.line-item.flagged{background:#fff8ed;border-color:#f0a500}
+.li-row{display:flex;justify-content:space-between;align-items:flex-start}
+.li-label{font-size:14px;font-weight:500}
+.li-price{font-size:14px;font-weight:600;min-width:64px;text-align:right}
+.li-sub{font-size:12px;color:#888;margin-top:2px}
+.li-sub.warn{color:#b07800}
+.tier-row{display:flex;gap:6px;margin-top:8px}
+.tier-btn{flex:1;padding:5px 0;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#f5f4f0;color:#555}
+.tier-btn.sel{border-color:#185FA5;background:#e6f1fb;color:#185FA5;font-weight:500}
+.qty-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.qty-btn{width:28px;height:28px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;color:#333;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.qty-val{min-width:36px;text-align:center;font-size:14px;font-weight:500;color:#1a1a18}
+.qty-unit{font-size:12px;color:#888}
+.hrs-input{width:70px;padding:5px 8px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;font-size:13px;color:#1a1a18}
+.subtotal-row{display:flex;justify-content:space-between;padding:10px 12px 6px;font-size:13px;color:#888;border-top:1px solid rgba(0,0,0,.08);margin-top:4px}
+.discount-box{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:11px 12px;margin-bottom:6px}
+.discount-box .li-label{margin-bottom:8px;display:block}
+.disc-row{display:flex;gap:8px;align-items:center}
+.disc-toggle{display:flex;border-radius:6px;border:1px solid #ddd;overflow:hidden}
+.disc-toggle button{padding:5px 14px;font-size:12px;cursor:pointer;border:none;background:#f5f4f0;color:#555}
+.disc-toggle button.sel{background:#e6f1fb;color:#185FA5;font-weight:500}
+.disc-input-wrap{position:relative;flex:1}
+.disc-input-wrap input{width:100%;padding:5px 24px 5px 8px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;font-size:13px;color:#1a1a18}
+.disc-sym{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:12px;color:#888;pointer-events:none}
+.disc-hint{font-size:11px;color:#aaa;margin-top:4px}
+.disc-amt{font-weight:600;font-size:14px;min-width:64px;text-align:right;color:#2d7a1f}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:12px 12px 4px;border-top:1px solid rgba(0,0,0,.1);margin-top:2px}
+.total-label{font-size:13px;color:#888}
+.total-amt{font-size:22px;font-weight:700;color:#1a1a18}
+#quote-footer{padding:12px 14px 28px;flex-shrink:0;background:#f5f4f0}
+#submit-quote-btn{width:100%;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;border:none;background:#2d5c14;color:#a0d060}
+#submit-quote-btn:disabled{background:#ddd;color:#aaa;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -86,9 +129,7 @@ input[type=range]{flex:1;margin:0 2px;accent-color:#aaa}
       <div class="icon-btn" title="Upload photo">&#128444;</div>
       <input type="file" id="file-input" accept="image/*">
     </div>
-    <div class="shutter-ring" id="shutter">
-      <div class="shutter-inner"></div>
-    </div>
+    <div class="shutter-ring" id="shutter"><div class="shutter-inner"></div></div>
     <div class="icon-btn" id="flip-btn" title="Flip camera">&#8635;</div>
   </div>
   <div id="ann-toolbar">
@@ -104,7 +145,7 @@ input[type=range]{flex:1;margin:0 2px;accent-color:#aaa}
       <div class="color-dot" style="background:#185FA5" data-color="#185FA5"></div>
       <div class="color-dot" style="background:#0F6E56" data-color="#0F6E56"></div>
       <div class="color-dot" style="background:#F9CB42" data-color="#F9CB42"></div>
-      <div class="color-dot" style="background:#ffffff" data-color="#ffffff"></div>
+      <div class="color-dot" style="background:#000000" data-color="#000000"></div>
       <input type="range" id="stroke-range" min="1" max="6" value="3">
       <button class="action-btn btn-retake" id="retake-btn">Retake</button>
       <button class="action-btn btn-done" id="done-btn">Done &#8594;</button>
@@ -113,6 +154,44 @@ input[type=range]{flex:1;margin:0 2px;accent-color:#aaa}
   <div id="preview-bar" style="display:none">
     <button class="btn-edit" id="edit-btn">Edit annotations</button>
     <button class="btn-submit" id="submit-btn">Generate quote</button>
+  </div>
+</div>
+
+<!-- Quote review screen -->
+<div id="quote-screen">
+  <div id="quote-header">
+    <h2>Quote review</h2>
+    <button id="new-quote-btn">+ New quote</button>
+  </div>
+  <div id="quote-body">
+    <img id="quote-photo" class="photo-thumb" alt="Site photo"/>
+    <div id="line-items-wrap"></div>
+    <div class="subtotal-row">
+      <span>Subtotal</span>
+      <span id="subtotal-val">$0.00</span>
+    </div>
+    <div class="discount-box">
+      <span class="li-label">Discount</span>
+      <div class="disc-row">
+        <div class="disc-toggle">
+          <button id="disc-pct-btn" class="sel" onclick="setDiscType('pct')">%</button>
+          <button id="disc-dollar-btn" onclick="setDiscType('dollar')">$</button>
+        </div>
+        <div class="disc-input-wrap">
+          <input type="number" id="disc-input" min="0" placeholder="0" oninput="recalc()"/>
+          <span class="disc-sym" id="disc-sym">%</span>
+        </div>
+        <span class="disc-amt" id="disc-amt-val">—</span>
+      </div>
+      <div class="disc-hint" id="disc-hint"></div>
+    </div>
+    <div class="total-row">
+      <span class="total-label">Total</span>
+      <span class="total-amt" id="total-val">$0.00</span>
+    </div>
+  </div>
+  <div id="quote-footer">
+    <button id="submit-quote-btn" disabled>Resolve flagged items to submit</button>
   </div>
 </div>
 
@@ -132,14 +211,18 @@ const labelOverlay = document.getElementById('label-overlay');
 const labelInput   = document.getElementById('label-input');
 const toast        = document.getElementById('toast');
 const wrap         = document.getElementById('viewfinder-wrap');
+const appEl        = document.getElementById('app');
+const quoteScreen  = document.getElementById('quote-screen');
 
 let stage = 'camera';
 let tool = 'pen', color = '#E85D24', strokeW = 3;
-let drawing = false;
-let strokes = [], currentPts = [];
+let drawing = false, strokes = [], currentPts = [];
 let pendingLabelPt = null;
 let stream = null, facingMode = 'environment';
 let canvasW = 0, canvasH = 0;
+let quoteData = null;
+let discType = 'pct';
+let lineItemState = {};
 
 function tick() {
   const d = new Date();
@@ -149,12 +232,9 @@ function tick() {
 tick(); setInterval(tick, 15000);
 
 function resizeCanvas() {
-  canvasW = wrap.offsetWidth;
-  canvasH = wrap.offsetHeight;
-  annCanvas.width  = canvasW;
-  annCanvas.height = canvasH;
-  snapCanvas.width = canvasW;
-  snapCanvas.height= canvasH;
+  canvasW = wrap.offsetWidth; canvasH = wrap.offsetHeight;
+  annCanvas.width = canvasW; annCanvas.height = canvasH;
+  snapCanvas.width = canvasW; snapCanvas.height = canvasH;
   redraw();
 }
 window.addEventListener('resize', resizeCanvas);
@@ -164,17 +244,14 @@ async function startCamera(facing) {
   if (stream) stream.getTracks().forEach(t => t.stop());
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: facing, width:{ideal:1920}, height:{ideal:1080} },
-      audio: false
+      video: { facingMode: facing, width:{ideal:1920}, height:{ideal:1080} }, audio: false
     });
     video.srcObject = stream;
     video.style.display = 'block';
     fallbackImg.style.display = 'none';
     grid.style.display = 'block';
   } catch(e) {
-    showToast(e.name === 'NotAllowedError'
-      ? 'Camera permission denied'
-      : 'Camera unavailable — use the upload button');
+    showToast(e.name === 'NotAllowedError' ? 'Camera permission denied' : 'Camera unavailable — use the upload button');
     video.style.display = 'none';
   }
 }
@@ -186,18 +263,15 @@ document.getElementById('flip-btn').onclick = () => {
 };
 
 document.getElementById('file-input').onchange = function() {
-  const file = this.files[0];
-  if (!file) return;
+  const file = this.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
       const sCtx = snapCanvas.getContext('2d');
-      sCtx.clearRect(0, 0, canvasW, canvasH);
-      const scale = Math.max(canvasW / img.width, canvasH / img.height);
-      const dx = (canvasW - img.width * scale) / 2;
-      const dy = (canvasH - img.height * scale) / 2;
-      sCtx.drawImage(img, dx, dy, img.width * scale, img.height * scale);
+      sCtx.clearRect(0,0,canvasW,canvasH);
+      const scale = Math.max(canvasW/img.width, canvasH/img.height);
+      sCtx.drawImage(img, (canvasW-img.width*scale)/2, (canvasH-img.height*scale)/2, img.width*scale, img.height*scale);
       applySnapshot();
     };
     img.src = e.target.result;
@@ -207,8 +281,7 @@ document.getElementById('file-input').onchange = function() {
 
 document.getElementById('shutter').onclick = () => {
   if (!stream) { showToast('No camera — use the upload button'); return; }
-  const sCtx = snapCanvas.getContext('2d');
-  sCtx.drawImage(video, 0, 0, canvasW, canvasH);
+  snapCanvas.getContext('2d').drawImage(video, 0, 0, canvasW, canvasH);
   applySnapshot();
 };
 
@@ -219,8 +292,7 @@ function applySnapshot() {
   wrap.style.backgroundSize = 'cover';
   wrap.style.backgroundPosition = 'center';
   grid.style.display = 'none';
-  strokes = [];
-  redraw();
+  strokes = []; redraw();
   setStage('annotate');
 }
 
@@ -241,7 +313,6 @@ document.querySelectorAll('[data-tool]').forEach(btn => {
   };
 });
 document.getElementById('undo-btn').onclick = () => { strokes.pop(); redraw(); };
-
 document.querySelectorAll('.color-dot').forEach(dot => {
   dot.onclick = () => {
     color = dot.dataset.color;
@@ -250,7 +321,6 @@ document.querySelectorAll('.color-dot').forEach(dot => {
   };
 });
 document.getElementById('stroke-range').oninput = e => { strokeW = +e.target.value; };
-
 document.getElementById('retake-btn').onclick = () => {
   wrap.style.backgroundImage = '';
   strokes = []; redraw();
@@ -267,49 +337,228 @@ document.getElementById('submit-btn').onclick = () => {
   const oCtx = out.getContext('2d');
   oCtx.drawImage(snapCanvas, 0, 0);
   oCtx.drawImage(annCanvas, 0, 0);
+  const photoUrl = out.toDataURL('image/jpeg', 0.92);
   out.toBlob(blob => {
     const fd = new FormData();
     fd.append('photo', blob, 'quote-photo.jpg');
-    showToast('Uploading to quote engine...');
-    fetch(API_URL + '/quote', { method: 'POST', body: fd })
+    document.getElementById('submit-btn').textContent = 'Analyzing...';
+    document.getElementById('submit-btn').disabled = true;
+    fetch(API_URL + '/quote', { method:'POST', body: fd })
       .then(r => r.json())
-      .then(data => {
-        showToast('Quote generated!');
-        console.log('Quote:', data);
-      })
-      .catch(() => showToast('Upload failed — check connection'));
+      .then(data => showQuote(data, photoUrl))
+      .catch(err => {
+        showToast('Upload failed — check connection');
+        document.getElementById('submit-btn').textContent = 'Generate quote';
+        document.getElementById('submit-btn').disabled = false;
+      });
   }, 'image/jpeg', 0.92);
 };
 
+document.getElementById('new-quote-btn').onclick = () => {
+  quoteScreen.classList.remove('show');
+  appEl.style.display = 'flex';
+  wrap.style.backgroundImage = '';
+  strokes = []; redraw();
+  grid.style.display = 'block';
+  document.getElementById('submit-btn').textContent = 'Generate quote';
+  document.getElementById('submit-btn').disabled = false;
+  startCamera(facingMode);
+  setStage('camera');
+};
+
+// ── Quote review ──────────────────────────────────────
+function fmt(n) {
+  return '$' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function showQuote(data, photoUrl) {
+  quoteData = data;
+  lineItemState = {};
+  document.getElementById('quote-photo').src = photoUrl;
+  document.getElementById('disc-input').value = '';
+  document.getElementById('disc-amt-val').textContent = '—';
+  document.getElementById('disc-hint').textContent = '';
+
+  const items = data.line_items || [];
+  items.forEach((item, i) => {
+    lineItemState[i] = {
+      qty: item.qty ?? 1,
+      tier: item.tier ?? null,
+      hours: null,
+      unit_price: item.unit_price,
+      total: item.total,
+      type: item.type ?? 'per_unit',
+      flagged: (item.confidence ?? 1) < 0.6 || (!item.tier && item.type === 'per_tier'),
+      clarifying_question: item.clarifying_question ?? null,
+    };
+  });
+
+  renderLineItems(items);
+  appEl.style.display = 'none';
+  quoteScreen.classList.add('show');
+  recalc();
+}
+
+function renderLineItems(items) {
+  const wrap2 = document.getElementById('line-items-wrap');
+  wrap2.innerHTML = '';
+  items.forEach((item, i) => {
+    const s = lineItemState[i];
+    const div = document.createElement('div');
+    div.className = 'line-item' + (s.flagged ? ' flagged' : '');
+    div.id = 'li-' + i;
+
+    const isTiered  = item.type === 'per_tier' || (!item.unit_price && item.tier !== undefined);
+    const isLabor   = item.type === 'time_based';
+
+    let controlsHtml = '';
+    if (s.flagged && isTiered) {
+      controlsHtml = `<div class="tier-row">
+        <button class="tier-btn${s.tier==='sm'?' sel':''}" onclick="pickTier(${i},'sm')">Small</button>
+        <button class="tier-btn${s.tier==='md'?' sel':''}" onclick="pickTier(${i},'md')">Medium</button>
+        <button class="tier-btn${s.tier==='lg'?' sel':''}" onclick="pickTier(${i},'lg')">Large</button>
+      </div>`;
+    } else if (s.flagged && isLabor) {
+      controlsHtml = `<div class="qty-row">
+        <input class="hrs-input" type="number" min="0.5" step="0.5" placeholder="hrs"
+          oninput="setHours(${i}, this.value)" value="${s.hours||''}"/>
+        <span class="qty-unit">hrs × $${item.unit_price ?? 65}/hr</span>
+      </div>`;
+    } else {
+      const step = item.unit === 'ft' ? 5 : item.unit === 'sqft' ? 100 : 1;
+      controlsHtml = `<div class="qty-row">
+        <button class="qty-btn" onclick="changeQty(${i},-${step})">−</button>
+        <span class="qty-val" id="qty-${i}">${s.qty}</span>
+        <span class="qty-unit">${item.unit||''}</span>
+        <button class="qty-btn" onclick="changeQty(${i},${step})">+</button>
+      </div>`;
+    }
+
+    const subText = s.flagged
+      ? (item.clarifying_question || (isTiered ? 'Select size to price' : 'Enter hours to price'))
+      : `${s.qty} ${item.unit||''} · ${fmt(item.unit_price||0)} each`;
+
+    div.innerHTML = `
+      <div class="li-row">
+        <div>
+          <div class="li-label">${item.description || item.label || item.service_code}</div>
+          <div class="li-sub${s.flagged?' warn':''}" id="lisub-${i}">${subText}</div>
+        </div>
+        <div class="li-price" id="liprice-${i}">${s.flagged?'—':fmt(s.total)}</div>
+      </div>
+      ${controlsHtml}`;
+    wrap2.appendChild(div);
+  });
+}
+
+function pickTier(i, tier) {
+  const s = lineItemState[i];
+  const tierPrices = { sm: 25, md: 45, lg: 70 };
+  s.tier = tier;
+  s.unit_price = tierPrices[tier];
+  s.total = s.unit_price * (s.qty || 1);
+  s.flagged = false;
+  document.querySelectorAll(`#li-${i} .tier-btn`).forEach(b => b.classList.remove('sel'));
+  document.querySelector(`#li-${i} .tier-btn:nth-child(${tier==='sm'?1:tier==='md'?2:3})`).classList.add('sel');
+  document.getElementById('li-'+i).classList.remove('flagged');
+  document.getElementById('lisub-'+i).className = 'li-sub';
+  document.getElementById('lisub-'+i).textContent = `${['Small','Medium','Large'][['sm','md','lg'].indexOf(tier)]} · ${fmt(s.unit_price)} each`;
+  document.getElementById('liprice-'+i).textContent = fmt(s.total);
+  recalc();
+}
+
+function setHours(i, val) {
+  const s = lineItemState[i];
+  const hrs = parseFloat(val);
+  if (!isNaN(hrs) && hrs > 0) {
+    s.hours = hrs;
+    s.total = hrs * (s.unit_price || 65);
+    s.flagged = false;
+    document.getElementById('li-'+i).classList.remove('flagged');
+    document.getElementById('liprice-'+i).textContent = fmt(s.total);
+  } else {
+    s.hours = null;
+    s.flagged = true;
+    document.getElementById('liprice-'+i).textContent = '—';
+  }
+  recalc();
+}
+
+function changeQty(i, delta) {
+  const s = lineItemState[i];
+  s.qty = Math.max(0, (s.qty||1) + delta);
+  s.total = s.qty * (s.unit_price||0);
+  document.getElementById('qty-'+i).textContent = s.qty;
+  document.getElementById('liprice-'+i).textContent = fmt(s.total);
+  recalc();
+}
+
+function setDiscType(t) {
+  discType = t;
+  document.getElementById('disc-pct-btn').classList.toggle('sel', t==='pct');
+  document.getElementById('disc-dollar-btn').classList.toggle('sel', t==='dollar');
+  document.getElementById('disc-sym').textContent = t === 'pct' ? '%' : '$';
+  document.getElementById('disc-input').value = '';
+  recalc();
+}
+
+function recalc() {
+  const states = Object.values(lineItemState);
+  const subtotal = states.reduce((s,i) => s + (i.total||0), 0);
+  const allResolved = states.every(s => !s.flagged);
+
+  document.getElementById('subtotal-val').textContent = fmt(subtotal);
+
+  const discVal = parseFloat(document.getElementById('disc-input').value);
+  let discAmt = 0;
+  if (!isNaN(discVal) && discVal > 0) {
+    discAmt = discType === 'pct'
+      ? subtotal * (Math.min(discVal,100)/100)
+      : Math.min(discVal, subtotal);
+    document.getElementById('disc-amt-val').textContent = '− ' + fmt(discAmt);
+    document.getElementById('disc-hint').textContent = discType === 'pct'
+      ? discVal + '% of ' + fmt(subtotal) : '';
+  } else {
+    document.getElementById('disc-amt-val').textContent = '—';
+    document.getElementById('disc-hint').textContent = '';
+  }
+
+  const total = subtotal - discAmt;
+  document.getElementById('total-val').textContent = fmt(total) + (allResolved?'':'+');
+
+  const btn = document.getElementById('submit-quote-btn');
+  btn.disabled = !allResolved;
+  btn.textContent = allResolved ? 'Submit quote' : 'Resolve flagged items to submit';
+}
+
+document.getElementById('submit-quote-btn').onclick = () => {
+  showToast('Quote submitted!');
+  document.getElementById('submit-quote-btn').textContent = 'Submitted ✓';
+  document.getElementById('submit-quote-btn').disabled = true;
+};
+
+// ── Label overlay ─────────────────────────────────────
 document.getElementById('label-cancel').onclick = () => {
-  labelOverlay.classList.remove('show');
-  labelInput.value = '';
-  pendingLabelPt = null;
+  labelOverlay.classList.remove('show'); labelInput.value = ''; pendingLabelPt = null;
 };
 document.getElementById('label-ok').onclick = placeLabel;
-labelInput.onkeydown = e => { if (e.key === 'Enter') placeLabel(); };
+labelInput.onkeydown = e => { if (e.key==='Enter') placeLabel(); };
 
 function placeLabel() {
   const txt = labelInput.value.trim();
-  if (!txt || !pendingLabelPt) {
-    labelOverlay.classList.remove('show');
-    labelInput.value = '';
-    return;
-  }
-  strokes.push({ type:'text', color, width: strokeW, text: txt, x: pendingLabelPt.x, y: pendingLabelPt.y });
+  if (!txt || !pendingLabelPt) { labelOverlay.classList.remove('show'); labelInput.value=''; return; }
+  strokes.push({ type:'text', color, width:strokeW, text:txt, x:pendingLabelPt.x, y:pendingLabelPt.y });
   redraw();
-  labelOverlay.classList.remove('show');
-  labelInput.value = '';
-  pendingLabelPt = null;
+  labelOverlay.classList.remove('show'); labelInput.value=''; pendingLabelPt=null;
 }
 
+// ── Drawing ───────────────────────────────────────────
 function getXY(e) {
   const r = annCanvas.getBoundingClientRect();
-  const sx = canvasW / r.width, sy = canvasH / r.height;
+  const sx = canvasW/r.width, sy = canvasH/r.height;
   const src = e.touches ? e.touches[0] : e;
-  return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
+  return { x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy };
 }
-
 annCanvas.addEventListener('mousedown',  onDown, {passive:false});
 annCanvas.addEventListener('touchstart', onDown, {passive:false});
 annCanvas.addEventListener('mousemove',  onMove, {passive:false});
@@ -319,112 +568,71 @@ annCanvas.addEventListener('touchend',   onUp);
 annCanvas.addEventListener('mouseleave', onUp);
 
 function onDown(e) {
-  if (stage !== 'annotate') return;
-  e.preventDefault();
+  if (stage!=='annotate') return; e.preventDefault();
   const pt = getXY(e);
-  if (tool === 'text') {
-    pendingLabelPt = pt;
-    labelInput.value = '';
-    labelOverlay.classList.add('show');
-    setTimeout(() => labelInput.focus(), 80);
-    return;
-  }
-  drawing = true;
-  currentPts = [pt];
+  if (tool==='text') { pendingLabelPt=pt; labelInput.value=''; labelOverlay.classList.add('show'); setTimeout(()=>labelInput.focus(),80); return; }
+  drawing=true; currentPts=[pt];
 }
-
 function onMove(e) {
-  if (!drawing || stage !== 'annotate') return;
-  e.preventDefault();
-  currentPts.push(getXY(e));
-  redraw();
-  renderStroke(annCanvas.getContext('2d'), { type:tool, color, width:strokeW, pts:currentPts });
+  if (!drawing||stage!=='annotate') return; e.preventDefault();
+  currentPts.push(getXY(e)); redraw();
+  renderStroke(annCanvas.getContext('2d'), {type:tool,color,width:strokeW,pts:currentPts});
 }
-
 function onUp() {
-  if (!drawing) return;
-  drawing = false;
-  if (currentPts.length > 1) {
-    strokes.push({ type:tool, color, width:strokeW, pts:[...currentPts] });
-  }
-  currentPts = [];
-  redraw();
+  if (!drawing) return; drawing=false;
+  if (currentPts.length>1) strokes.push({type:tool,color,width:strokeW,pts:[...currentPts]});
+  currentPts=[]; redraw();
 }
-
 function redraw() {
-  const c = annCanvas.getContext('2d');
-  c.clearRect(0, 0, canvasW, canvasH);
-  strokes.forEach(s => renderStroke(c, s));
+  const c=annCanvas.getContext('2d'); c.clearRect(0,0,canvasW,canvasH);
+  strokes.forEach(s=>renderStroke(c,s));
 }
-
-function renderStroke(c, s) {
-  c.lineCap = 'round'; c.lineJoin = 'round';
-  if (s.type === 'text') {
-    const fs = Math.max(14, s.width * 4);
-    c.font = 'bold ' + fs + 'px -apple-system,sans-serif';
-    const tw = c.measureText(s.text).width;
-    const pad = 7, ph = fs + 10;
-    c.fillStyle = 'rgba(0,0,0,.5)';
-    rrect(c, s.x - pad, s.y - ph + 3, tw + pad * 2, ph, 6);
-    c.fill();
-    c.fillStyle = s.color;
-    c.fillText(s.text, s.x, s.y);
-    return;
+function renderStroke(c,s) {
+  c.lineCap='round'; c.lineJoin='round';
+  if (s.type==='text') {
+    const fs=Math.max(14,s.width*4); c.font='bold '+fs+'px -apple-system,sans-serif';
+    const tw=c.measureText(s.text).width, pad=7, ph=fs+10;
+    c.fillStyle='rgba(0,0,0,.5)'; rrect(c,s.x-pad,s.y-ph+3,tw+pad*2,ph,6); c.fill();
+    c.fillStyle=s.color; c.fillText(s.text,s.x,s.y); return;
   }
-  if (!s.pts || s.pts.length < 2) return;
-  if (s.type === 'eraser') {
-    c.globalCompositeOperation = 'destination-out';
-    c.strokeStyle = 'rgba(0,0,0,1)';
-    c.lineWidth = s.width * 6;
-    tracePath(c, s.pts); c.stroke();
-    c.globalCompositeOperation = 'source-over';
-    return;
+  if (!s.pts||s.pts.length<2) return;
+  if (s.type==='eraser') {
+    c.globalCompositeOperation='destination-out'; c.strokeStyle='rgba(0,0,0,1)'; c.lineWidth=s.width*6;
+    tracePath(c,s.pts); c.stroke(); c.globalCompositeOperation='source-over'; return;
   }
-  if (s.type === 'arrow') {
-    const p1 = s.pts[0], p2 = s.pts[s.pts.length - 1];
-    const ang = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-    c.lineWidth = s.width + 2; c.strokeStyle = 'rgba(0,0,0,.35)';
-    c.beginPath(); c.moveTo(p1.x, p1.y); c.lineTo(p2.x, p2.y); c.stroke();
-    c.lineWidth = s.width; c.strokeStyle = s.color;
-    c.beginPath(); c.moveTo(p1.x, p1.y); c.lineTo(p2.x, p2.y); c.stroke();
-    const hs = 14 + s.width;
+  if (s.type==='arrow') {
+    const p1=s.pts[0],p2=s.pts[s.pts.length-1],ang=Math.atan2(p2.y-p1.y,p2.x-p1.x);
+    c.lineWidth=s.width+2; c.strokeStyle='rgba(0,0,0,.35)';
+    c.beginPath(); c.moveTo(p1.x,p1.y); c.lineTo(p2.x,p2.y); c.stroke();
+    c.lineWidth=s.width; c.strokeStyle=s.color;
+    c.beginPath(); c.moveTo(p1.x,p1.y); c.lineTo(p2.x,p2.y); c.stroke();
+    const hs=14+s.width;
     c.beginPath();
-    c.moveTo(p2.x, p2.y);
-    c.lineTo(p2.x - hs * Math.cos(ang - .4), p2.y - hs * Math.sin(ang - .4));
-    c.moveTo(p2.x, p2.y);
-    c.lineTo(p2.x - hs * Math.cos(ang + .4), p2.y - hs * Math.sin(ang + .4));
-    c.stroke();
-    return;
+    c.moveTo(p2.x,p2.y); c.lineTo(p2.x-hs*Math.cos(ang-.4),p2.y-hs*Math.sin(ang-.4));
+    c.moveTo(p2.x,p2.y); c.lineTo(p2.x-hs*Math.cos(ang+.4),p2.y-hs*Math.sin(ang+.4));
+    c.stroke(); return;
   }
-  c.strokeStyle = 'rgba(0,0,0,.3)'; c.lineWidth = s.width + 2;
-  tracePath(c, s.pts); c.stroke();
-  c.strokeStyle = s.color; c.lineWidth = s.width;
-  tracePath(c, s.pts); c.stroke();
+  c.strokeStyle='rgba(0,0,0,.3)'; c.lineWidth=s.width+2; tracePath(c,s.pts); c.stroke();
+  c.strokeStyle=s.color; c.lineWidth=s.width; tracePath(c,s.pts); c.stroke();
 }
-
-function tracePath(c, pts) {
-  c.beginPath(); c.moveTo(pts[0].x, pts[0].y);
-  for (let i = 1; i < pts.length - 1; i++) {
-    const mx = (pts[i].x + pts[i+1].x) / 2;
-    const my = (pts[i].y + pts[i+1].y) / 2;
-    c.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+function tracePath(c,pts) {
+  c.beginPath(); c.moveTo(pts[0].x,pts[0].y);
+  for (let i=1;i<pts.length-1;i++) {
+    const mx=(pts[i].x+pts[i+1].x)/2, my=(pts[i].y+pts[i+1].y)/2;
+    c.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);
   }
-  c.lineTo(pts[pts.length-1].x, pts[pts.length-1].y);
+  c.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
 }
-
-function rrect(c, x, y, w, h, r) {
+function rrect(c,x,y,w,h,r) {
   c.beginPath();
   c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.arcTo(x+w,y,x+w,y+r,r);
   c.lineTo(x+w,y+h-r); c.arcTo(x+w,y+h,x+w-r,y+h,r);
   c.lineTo(x+r,y+h); c.arcTo(x,y+h,x,y+h-r,r);
-  c.lineTo(x,y+r); c.arcTo(x,y,x+r,y,r);
-  c.closePath();
+  c.lineTo(x,y+r); c.arcTo(x,y,x+r,y,r); c.closePath();
 }
-
 function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2800);
+  toast.textContent=msg; toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),2800);
 }
 </script>
 </body>
