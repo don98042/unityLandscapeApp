@@ -1,0 +1,15 @@
+{
+  "name": "unity-landscape-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "zip -r function.zip src package.json node_modules",
+    "deploy": "npm run build && aws lambda update-function-code --function-name unity-landscape-api --zip-file fileb://function.zip"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0",
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/client-secrets-manager": "^3.600.0",
+    "pg": "^8.11.0"
+  }
+}
