@@ -1,7 +1,0 @@
-============================================
-API URL: https://sz2lrfueaa.execute-api.us-west-2.amazonaws.com/prod
-DB password stored in Secrets Manager: unity-landscape/db
-Fill in RDS host after instance is ready (~10 min):
-  aws rds describe-db-instances --db-instance-identifier unity-landscape-db --query 'DBInstances[0].Endpoint.Address' --output text --region us-west-2
-Fill in AI API key in Secrets Manager: unity-landscape/ai
-============================================
