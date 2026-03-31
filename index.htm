@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Unity Landscape — Field Quote</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}
+#app{width:100%;max-width:430px;height:100dvh;display:flex;flex-direction:column;background:#000;position:relative;overflow:hidden}
+#statusbar{background:#000;color:#fff;font-size:12px;display:flex;justify-content:space-between;padding:8px 20px 4px;flex-shrink:0}
+#viewfinder-wrap{flex:1;position:relative;overflow:hidden;background:#111}
+video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#fallback-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+#grid{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#annotation-canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#snap-canvas{display:none}
+#cam-bar{background:#111;padding:12px 24px 28px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.shutter-ring{width:64px;height:64px;border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.shutter-ring:active .shutter-inner{transform:scale(.88)}
+.shutter-inner{width:50px;height:50px;border-radius:50%;background:#fff;transition:transform .1s}
+.icon-btn{width:46px;height:46px;border-radius:10px;border:1px solid #555;background:#222;color:#ccc;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#upload-btn-wrap{position:relative}
+#file-input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+#ann-toolbar{background:#111;padding:8px 12px 20px;flex-shrink:0;display:none}
+.tools{display:flex;gap:6px;margin-bottom:8px}
+.tool-btn{flex:1;padding:7px 0;border-radius:7px;font-size:18px;background:transparent;border:1px solid #444;color:#fff;cursor:pointer;transition:background .12s,border-color .12s}
+.tool-btn.active{background:rgba(255,255,255,.16);border-color:#fff}
+.bottom-row{display:flex;align-items:center;gap:7px}
+.color-dot{width:24px;height:24px;border-radius:50%;border:2px solid transparent;flex-shrink:0;cursor:pointer;transition:border-color .12s}
+.color-dot.active{border-color:#fff}
+input[type=range]{flex:1;margin:0 2px;accent-color:#aaa}
+.action-btn{padding:6px 11px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none}
+.btn-retake{background:#2a2a2a;color:#aaa}
+.btn-done{background:#2d5c14;color:#a0d060}
+#preview-bar{background:#111;padding:10px 16px 28px;display:flex;gap:8px;flex-shrink:0}
+.btn-edit{flex:1;padding:12px 0;border-radius:9px;border:1px solid #555;background:transparent;color:#ccc;font-size:14px;cursor:pointer}
+.btn-submit{flex:2;padding:12px 0;border-radius:9px;border:1px solid #4a8820;background:#2d5c14;color:#a0d060;font-size:14px;font-weight:600;cursor:pointer}
+#label-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;z-index:10}
+#label-overlay.show{display:flex}
+#label-box{background:#1c1c1e;border-radius:14px;padding:18px;width:260px}
+#label-box p{color:#eee;font-size:14px;font-weight:600;margin-bottom:10px}
+#label-input{width:100%;padding:9px 11px;border-radius:8px;border:1px solid #444;background:#2c2c2e;color:#fff;font-size:14px}
+#label-actions{display:flex;gap:8px;margin-top:12px}
+#label-cancel{flex:1;padding:9px 0;border-radius:8px;border:1px solid #444;background:transparent;color:#aaa;font-size:14px;cursor:pointer}
+#label-ok{flex:1;padding:9px 0;border-radius:8px;background:#2d5c14;color:#a0d060;font-size:14px;font-weight:600;cursor:pointer;border:none}
+#toast{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;font-size:13px;padding:8px 16px;border-radius:20px;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap;z-index:20}
+#toast.show{opacity:1}
+#stage-label{font-weight:600;letter-spacing:.08em;font-size:11px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="statusbar">
+    <span id="clock">9:41</span>
+    <span id="stage-label">CAMERA</span>
+    <span id="status-right">●●●</span>
+  </div>
+  <div id="viewfinder-wrap">
+    <video id="video" autoplay playsinline muted></video>
+    <img id="fallback-img" alt="captured"/>
+    <svg id="grid" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="33.3" y1="0" x2="33.3" y2="100" stroke="rgba(255,255,255,.2)" stroke-width=".3"/>
+      <line x1="66.6" y1="0" x2="66.6" y2="100" stroke="rgba(255,255,255,.2)" stroke-width=".3"/>
+      <line x1="0" y1="33.3" x2="100" y2="33.3" stroke="rgba(255,255,255,.2)" stroke-width=".3"/>
+      <line x1="0" y1="66.6" x2="100" y2="66.6" stroke="rgba(255,255,255,.2)" stroke-width=".3"/>
+    </svg>
+    <canvas id="annotation-canvas"></canvas>
+    <canvas id="snap-canvas"></canvas>
+    <div id="label-overlay">
+      <div id="label-box">
+        <p>Add label</p>
+        <input id="label-input" placeholder="e.g. Trim this hedge" autocomplete="off"/>
+        <div id="label-actions">
+          <button id="label-cancel">Cancel</button>
+          <button id="label-ok">Place</button>
+        </div>
+      </div>
+    </div>
+    <div id="toast"></div>
+  </div>
+  <div id="cam-bar">
+    <div id="upload-btn-wrap">
+      <div class="icon-btn" title="Upload photo">&#128444;</div>
+      <input type="file" id="file-input" accept="image/*">
+    </div>
+    <div class="shutter-ring" id="shutter">
+      <div class="shutter-inner"></div>
+    </div>
+    <div class="icon-btn" id="flip-btn" title="Flip camera">&#8635;</div>
+  </div>
+  <div id="ann-toolbar">
+    <div class="tools">
+      <button class="tool-btn active" data-tool="pen">&#9998;</button>
+      <button class="tool-btn" data-tool="arrow">&#8599;</button>
+      <button class="tool-btn" data-tool="text">T</button>
+      <button class="tool-btn" data-tool="eraser">&#9633;</button>
+      <button class="tool-btn" id="undo-btn">&#8617;</button>
+    </div>
+    <div class="bottom-row">
+      <div class="color-dot active" style="background:#E85D24" data-color="#E85D24"></div>
+      <div class="color-dot" style="background:#185FA5" data-color="#185FA5"></div>
+      <div class="color-dot" style="background:#0F6E56" data-color="#0F6E56"></div>
+      <div class="color-dot" style="background:#F9CB42" data-color="#F9CB42"></div>
+      <div class="color-dot" style="background:#ffffff" data-color="#ffffff"></div>
+      <input type="range" id="stroke-range" min="1" max="6" value="3">
+      <button class="action-btn btn-retake" id="retake-btn">Retake</button>
+      <button class="action-btn btn-done" id="done-btn">Done &#8594;</button>
+    </div>
+  </div>
+  <div id="preview-bar" style="display:none">
+    <button class="btn-edit" id="edit-btn">Edit annotations</button>
+    <button class="btn-submit" id="submit-btn">Generate quote</button>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://sz2lrfueaa.execute-api.us-west-2.amazonaws.com/prod';
+
+const video        = document.getElementById('video');
+const fallbackImg  = document.getElementById('fallback-img');
+const annCanvas    = document.getElementById('annotation-canvas');
+const snapCanvas   = document.getElementById('snap-canvas');
+const grid         = document.getElementById('grid');
+const camBar       = document.getElementById('cam-bar');
+const annToolbar   = document.getElementById('ann-toolbar');
+const previewBar   = document.getElementById('preview-bar');
+const stageLabel   = document.getElementById('stage-label');
+const labelOverlay = document.getElementById('label-overlay');
+const labelInput   = document.getElementById('label-input');
+const toast        = document.getElementById('toast');
+const wrap         = document.getElementById('viewfinder-wrap');
+
+let stage = 'camera';
+let tool = 'pen', color = '#E85D24', strokeW = 3;
+let drawing = false;
+let strokes = [], currentPts = [];
+let pendingLabelPt = null;
+let stream = null, facingMode = 'environment';
+let canvasW = 0, canvasH = 0;
+
+function tick() {
+  const d = new Date();
+  document.getElementById('clock').textContent =
+    d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+tick(); setInterval(tick, 15000);
+
+function resizeCanvas() {
+  canvasW = wrap.offsetWidth;
+  canvasH = wrap.offsetHeight;
+  annCanvas.width  = canvasW;
+  annCanvas.height = canvasH;
+  snapCanvas.width = canvasW;
+  snapCanvas.height= canvasH;
+  redraw();
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+async function startCamera(facing) {
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facing, width:{ideal:1920}, height:{ideal:1080} },
+      audio: false
+    });
+    video.srcObject = stream;
+    video.style.display = 'block';
+    fallbackImg.style.display = 'none';
+    grid.style.display = 'block';
+  } catch(e) {
+    showToast(e.name === 'NotAllowedError'
+      ? 'Camera permission denied'
+      : 'Camera unavailable — use the upload button');
+    video.style.display = 'none';
+  }
+}
+startCamera(facingMode);
+
+document.getElementById('flip-btn').onclick = () => {
+  facingMode = facingMode === 'environment' ? 'user' : 'environment';
+  startCamera(facingMode);
+};
+
+document.getElementById('file-input').onchange = function() {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const sCtx = snapCanvas.getContext('2d');
+      sCtx.clearRect(0, 0, canvasW, canvasH);
+      const scale = Math.max(canvasW / img.width, canvasH / img.height);
+      const dx = (canvasW - img.width * scale) / 2;
+      const dy = (canvasH - img.height * scale) / 2;
+      sCtx.drawImage(img, dx, dy, img.width * scale, img.height * scale);
+      applySnapshot();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+document.getElementById('shutter').onclick = () => {
+  if (!stream) { showToast('No camera — use the upload button'); return; }
+  const sCtx = snapCanvas.getContext('2d');
+  sCtx.drawImage(video, 0, 0, canvasW, canvasH);
+  applySnapshot();
+};
+
+function applySnapshot() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  video.style.display = 'none';
+  wrap.style.backgroundImage = 'url(' + snapCanvas.toDataURL() + ')';
+  wrap.style.backgroundSize = 'cover';
+  wrap.style.backgroundPosition = 'center';
+  grid.style.display = 'none';
+  strokes = [];
+  redraw();
+  setStage('annotate');
+}
+
+function setStage(s) {
+  stage = s;
+  stageLabel.textContent = s.toUpperCase();
+  camBar.style.display     = s === 'camera'   ? 'flex'  : 'none';
+  annToolbar.style.display = s === 'annotate' ? 'block' : 'none';
+  previewBar.style.display = s === 'preview'  ? 'flex'  : 'none';
+  annCanvas.style.pointerEvents = s === 'annotate' ? 'auto' : 'none';
+}
+
+document.querySelectorAll('[data-tool]').forEach(btn => {
+  btn.onclick = () => {
+    tool = btn.dataset.tool;
+    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  };
+});
+document.getElementById('undo-btn').onclick = () => { strokes.pop(); redraw(); };
+
+document.querySelectorAll('.color-dot').forEach(dot => {
+  dot.onclick = () => {
+    color = dot.dataset.color;
+    document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+  };
+});
+document.getElementById('stroke-range').oninput = e => { strokeW = +e.target.value; };
+
+document.getElementById('retake-btn').onclick = () => {
+  wrap.style.backgroundImage = '';
+  strokes = []; redraw();
+  grid.style.display = 'block';
+  startCamera(facingMode);
+  setStage('camera');
+};
+document.getElementById('done-btn').onclick  = () => setStage('preview');
+document.getElementById('edit-btn').onclick  = () => setStage('annotate');
+
+document.getElementById('submit-btn').onclick = () => {
+  const out = document.createElement('canvas');
+  out.width = canvasW; out.height = canvasH;
+  const oCtx = out.getContext('2d');
+  oCtx.drawImage(snapCanvas, 0, 0);
+  oCtx.drawImage(annCanvas, 0, 0);
+  out.toBlob(blob => {
+    const fd = new FormData();
+    fd.append('photo', blob, 'quote-photo.jpg');
+    showToast('Uploading to quote engine...');
+    fetch(API_URL + '/quote', { method: 'POST', body: fd })
+      .then(r => r.json())
+      .then(data => {
+        showToast('Quote generated!');
+        console.log('Quote:', data);
+      })
+      .catch(() => showToast('Upload failed — check connection'));
+  }, 'image/jpeg', 0.92);
+};
+
+document.getElementById('label-cancel').onclick = () => {
+  labelOverlay.classList.remove('show');
+  labelInput.value = '';
+  pendingLabelPt = null;
+};
+document.getElementById('label-ok').onclick = placeLabel;
+labelInput.onkeydown = e => { if (e.key === 'Enter') placeLabel(); };
+
+function placeLabel() {
+  const txt = labelInput.value.trim();
+  if (!txt || !pendingLabelPt) {
+    labelOverlay.classList.remove('show');
+    labelInput.value = '';
+    return;
+  }
+  strokes.push({ type:'text', color, width: strokeW, text: txt, x: pendingLabelPt.x, y: pendingLabelPt.y });
+  redraw();
+  labelOverlay.classList.remove('show');
+  labelInput.value = '';
+  pendingLabelPt = null;
+}
+
+function getXY(e) {
+  const r = annCanvas.getBoundingClientRect();
+  const sx = canvasW / r.width, sy = canvasH / r.height;
+  const src = e.touches ? e.touches[0] : e;
+  return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
+}
+
+annCanvas.addEventListener('mousedown',  onDown, {passive:false});
+annCanvas.addEventListener('touchstart', onDown, {passive:false});
+annCanvas.addEventListener('mousemove',  onMove, {passive:false});
+annCanvas.addEventListener('touchmove',  onMove, {passive:false});
+annCanvas.addEventListener('mouseup',    onUp);
+annCanvas.addEventListener('touchend',   onUp);
+annCanvas.addEventListener('mouseleave', onUp);
+
+function onDown(e) {
+  if (stage !== 'annotate') return;
+  e.preventDefault();
+  const pt = getXY(e);
+  if (tool === 'text') {
+    pendingLabelPt = pt;
+    labelInput.value = '';
+    labelOverlay.classList.add('show');
+    setTimeout(() => labelInput.focus(), 80);
+    return;
+  }
+  drawing = true;
+  currentPts = [pt];
+}
+
+function onMove(e) {
+  if (!drawing || stage !== 'annotate') return;
+  e.preventDefault();
+  currentPts.push(getXY(e));
+  redraw();
+  renderStroke(annCanvas.getContext('2d'), { type:tool, color, width:strokeW, pts:currentPts });
+}
+
+function onUp() {
+  if (!drawing) return;
+  drawing = false;
+  if (currentPts.length > 1) {
+    strokes.push({ type:tool, color, width:strokeW, pts:[...currentPts] });
+  }
+  currentPts = [];
+  redraw();
+}
+
+function redraw() {
+  const c = annCanvas.getContext('2d');
+  c.clearRect(0, 0, canvasW, canvasH);
+  strokes.forEach(s => renderStroke(c, s));
+}
+
+function renderStroke(c, s) {
+  c.lineCap = 'round'; c.lineJoin = 'round';
+  if (s.type === 'text') {
+    const fs = Math.max(14, s.width * 4);
+    c.font = 'bold ' + fs + 'px -apple-system,sans-serif';
+    const tw = c.measureText(s.text).width;
+    const pad = 7, ph = fs + 10;
+    c.fillStyle = 'rgba(0,0,0,.5)';
+    rrect(c, s.x - pad, s.y - ph + 3, tw + pad * 2, ph, 6);
+    c.fill();
+    c.fillStyle = s.color;
+    c.fillText(s.text, s.x, s.y);
+    return;
+  }
+  if (!s.pts || s.pts.length < 2) return;
+  if (s.type === 'eraser') {
+    c.globalCompositeOperation = 'destination-out';
+    c.strokeStyle = 'rgba(0,0,0,1)';
+    c.lineWidth = s.width * 6;
+    tracePath(c, s.pts); c.stroke();
+    c.globalCompositeOperation = 'source-over';
+    return;
+  }
+  if (s.type === 'arrow') {
+    const p1 = s.pts[0], p2 = s.pts[s.pts.length - 1];
+    const ang = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+    c.lineWidth = s.width + 2; c.strokeStyle = 'rgba(0,0,0,.35)';
+    c.beginPath(); c.moveTo(p1.x, p1.y); c.lineTo(p2.x, p2.y); c.stroke();
+    c.lineWidth = s.width; c.strokeStyle = s.color;
+    c.beginPath(); c.moveTo(p1.x, p1.y); c.lineTo(p2.x, p2.y); c.stroke();
+    const hs = 14 + s.width;
+    c.beginPath();
+    c.moveTo(p2.x, p2.y);
+    c.lineTo(p2.x - hs * Math.cos(ang - .4), p2.y - hs * Math.sin(ang - .4));
+    c.moveTo(p2.x, p2.y);
+    c.lineTo(p2.x - hs * Math.cos(ang + .4), p2.y - hs * Math.sin(ang + .4));
+    c.stroke();
+    return;
+  }
+  c.strokeStyle = 'rgba(0,0,0,.3)'; c.lineWidth = s.width + 2;
+  tracePath(c, s.pts); c.stroke();
+  c.strokeStyle = s.color; c.lineWidth = s.width;
+  tracePath(c, s.pts); c.stroke();
+}
+
+function tracePath(c, pts) {
+  c.beginPath(); c.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length - 1; i++) {
+    const mx = (pts[i].x + pts[i+1].x) / 2;
+    const my = (pts[i].y + pts[i+1].y) / 2;
+    c.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+  }
+  c.lineTo(pts[pts.length-1].x, pts[pts.length-1].y);
+}
+
+function rrect(c, x, y, w, h, r) {
+  c.beginPath();
+  c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.arcTo(x+w,y,x+w,y+r,r);
+  c.lineTo(x+w,y+h-r); c.arcTo(x+w,y+h,x+w-r,y+h,r);
+  c.lineTo(x+r,y+h); c.arcTo(x,y+h,x,y+h-r,r);
+  c.lineTo(x,y+r); c.arcTo(x,y,x+r,y,r);
+  c.closePath();
+}
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
