@@ -223,6 +223,7 @@ let canvasW = 0, canvasH = 0;
 let quoteData = null;
 let discType = 'pct';
 let lineItemState = {};
+let capturedPhotoUrl = null;
 
 function tick() {
   const d = new Date();
@@ -338,15 +339,23 @@ document.getElementById('submit-btn').onclick = () => {
   oCtx.drawImage(snapCanvas, 0, 0);
   oCtx.drawImage(annCanvas, 0, 0);
   const photoUrl = out.toDataURL('image/jpeg', 0.92);
+  capturedPhotoUrl = photoUrl;
   out.toBlob(blob => {
     const fd = new FormData();
     fd.append('photo', blob, 'quote-photo.jpg');
     document.getElementById('submit-btn').textContent = 'Analyzing...';
     document.getElementById('submit-btn').disabled = true;
     fetch(API_URL + '/quote', { method:'POST', body: fd })
-      .then(r => r.json())
-      .then(data => showQuote(data, photoUrl))
+      .then(r => {
+        console.log('API status:', r.status);
+        return r.json();
+      })
+      .then(data => {
+        console.log('API response:', JSON.stringify(data));
+        showQuote(data, capturedPhotoUrl);
+      })
       .catch(err => {
+        console.error('Fetch error:', err);
         showToast('Upload failed — check connection');
         document.getElementById('submit-btn').textContent = 'Generate quote';
         document.getElementById('submit-btn').disabled = false;
