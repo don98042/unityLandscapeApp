@@ -8,12 +8,11 @@
 <title>Unity Landscape — Field Quote</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:#000;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}
+html,body{height:100%;background:#000;display:flex;flex-direction:column;align-items:stretch;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}
 #app{width:100%;height:100dvh;display:flex;flex-direction:column;background:#000;position:relative;overflow:hidden}
 #statusbar{background:#000;color:#fff;font-size:12px;display:flex;justify-content:space-between;padding:8px 20px 4px;flex-shrink:0}
 #viewfinder-wrap{flex:1;position:relative;overflow:hidden;background:#111}
 video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-#fallback-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
 #grid{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #annotation-canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
 #snap-canvas{display:none}
@@ -26,10 +25,10 @@ video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #file-input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
 #ann-toolbar{background:#111;padding:8px 12px 20px;flex-shrink:0;display:none}
 .tools{display:flex;gap:4px;margin-bottom:8px}
-.tool-btn{flex:1;padding:7px 0;border-radius:7px;font-size:18px;background:transparent;border:1px solid #444;color:#fff;cursor:pointer;transition:background .12s,border-color .12s}
+.tool-btn{flex:1;padding:7px 0;border-radius:7px;font-size:18px;background:transparent;border:1px solid #444;color:#fff;cursor:pointer}
 .tool-btn.active{background:rgba(255,255,255,.16);border-color:#fff}
-.bottom-row{display:flex;align-items:center;gap:4px;flex-wrap:nowrap}
-.color-dot{width:20px;height:20px;border-radius:50%;border:2px solid transparent;flex-shrink:0;cursor:pointer;transition:border-color .12s}
+.bottom-row{display:flex;align-items:center;gap:4px}
+.color-dot{width:20px;height:20px;border-radius:50%;border:2px solid transparent;flex-shrink:0;cursor:pointer}
 .color-dot.active{border-color:#fff}
 input[type=range]{flex:1;min-width:0;margin:0 2px;accent-color:#aaa}
 .action-btn{padding:6px 8px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;white-space:nowrap;flex-shrink:0}
@@ -50,43 +49,43 @@ input[type=range]{flex:1;min-width:0;margin:0 2px;accent-color:#aaa}
 #toast.show{opacity:1}
 #stage-label{font-weight:600;letter-spacing:.08em;font-size:11px}
 
-/* Quote review screen */
+/* Quote screen */
 #quote-screen{display:none;flex-direction:column;height:100dvh;width:100%;background:#f5f4f0;color:#1a1a18;overflow:hidden}
 #quote-screen.show{display:flex}
 #quote-header{background:#fff;padding:14px 16px 10px;border-bottom:1px solid rgba(0,0,0,.08);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
-#quote-header h2{font-size:17px;font-weight:600}
-#new-quote-btn{font-size:13px;color:#185FA5;background:none;border:none;cursor:pointer;padding:4px 0}
+#quote-header h2{font-size:17px;font-weight:600;color:#1a1a18}
+#new-quote-btn{font-size:13px;color:#185FA5;background:none;border:none;cursor:pointer}
 #quote-body{flex:1;overflow-y:auto;padding:12px 14px;-webkit-overflow-scrolling:touch}
 .photo-thumb{width:100%;height:160px;object-fit:cover;border-radius:10px;margin-bottom:12px;background:#ddd}
-.section-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;padding:8px 0 4px}
 .line-item{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:11px 12px;margin-bottom:6px}
 .line-item.flagged{background:#fff8ed;border-color:#f0a500}
-.li-row{display:flex;justify-content:space-between;align-items:flex-start}
-.li-label{font-size:14px;font-weight:500;color:#1a1a18}
-.li-price{font-size:14px;font-weight:600;min-width:64px;text-align:right;color:#1a1a18}
-.li-sub{font-size:12px;color:#888;margin-top:2px}
+.li-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px}
+.li-label{font-size:14px;font-weight:500;color:#1a1a18;flex:1;padding-right:8px}
+.li-price{font-size:14px;font-weight:600;color:#1a1a18;min-width:70px;text-align:right}
+.li-sub{font-size:12px;color:#888;margin-bottom:6px}
 .li-sub.warn{color:#b07800}
-.tier-row{display:flex;gap:6px;margin-top:8px}
-.tier-btn{flex:1;padding:5px 0;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#f5f4f0;color:#555}
+.tier-row{display:flex;gap:6px;margin-top:6px}
+.tier-btn{flex:1;padding:6px 0;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#f5f4f0;color:#555}
 .tier-btn.sel{border-color:#185FA5;background:#e6f1fb;color:#185FA5;font-weight:500}
-.qty-row{display:flex;align-items:center;gap:8px;margin-top:8px}
-.qty-btn{width:28px;height:28px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;color:#333;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.qty-val{min-width:52px;text-align:center;font-size:14px;font-weight:500;color:#1a1a18;padding:3px 6px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;-moz-appearance:textfield}
-.qty-val::-webkit-outer-spin-button,.qty-val::-webkit-inner-spin-button{-webkit-appearance:none}
+.qty-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.qty-btn{width:30px;height:30px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;color:#333;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.qty-input{width:72px;padding:5px 6px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;font-size:14px;font-weight:500;color:#1a1a18;text-align:center;-moz-appearance:textfield}
+.qty-input::-webkit-outer-spin-button,.qty-input::-webkit-inner-spin-button{-webkit-appearance:none}
 .qty-unit{font-size:12px;color:#888}
 .hrs-input{width:70px;padding:5px 8px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;font-size:13px;color:#1a1a18}
+.confirm-btn{margin-top:8px;width:100%;padding:8px;border-radius:7px;border:1px solid #4a8820;background:#2d5c14;color:#a0d060;font-size:13px;font-weight:500;cursor:pointer}
 .subtotal-row{display:flex;justify-content:space-between;padding:10px 12px 6px;font-size:13px;color:#888;border-top:1px solid rgba(0,0,0,.08);margin-top:4px}
 .discount-box{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:11px 12px;margin-bottom:6px}
-.discount-box .li-label{margin-bottom:8px;display:block}
+.disc-label{font-size:14px;font-weight:500;color:#1a1a18;margin-bottom:8px;display:block}
 .disc-row{display:flex;gap:8px;align-items:center}
-.disc-toggle{display:flex;border-radius:6px;border:1px solid #ddd;overflow:hidden}
+.disc-toggle{display:flex;border-radius:6px;border:1px solid #ddd;overflow:hidden;flex-shrink:0}
 .disc-toggle button{padding:5px 14px;font-size:12px;cursor:pointer;border:none;background:#f5f4f0;color:#555}
 .disc-toggle button.sel{background:#e6f1fb;color:#185FA5;font-weight:500}
 .disc-input-wrap{position:relative;flex:1}
 .disc-input-wrap input{width:100%;padding:5px 24px 5px 8px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;font-size:13px;color:#1a1a18}
 .disc-sym{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:12px;color:#888;pointer-events:none}
-.disc-hint{font-size:11px;color:#aaa;margin-top:4px}
 .disc-amt{font-weight:600;font-size:14px;min-width:64px;text-align:right;color:#2d7a1f}
+.disc-hint{font-size:11px;color:#aaa;margin-top:4px}
 .total-row{display:flex;justify-content:space-between;align-items:center;padding:12px 12px 4px;border-top:1px solid rgba(0,0,0,.1);margin-top:2px}
 .total-label{font-size:13px;color:#888}
 .total-amt{font-size:22px;font-weight:700;color:#1a1a18}
@@ -100,11 +99,10 @@ input[type=range]{flex:1;min-width:0;margin:0 2px;accent-color:#aaa}
   <div id="statusbar">
     <span id="clock">9:41</span>
     <span id="stage-label">CAMERA</span>
-    <span id="status-right">●●●</span>
+    <span>●●●</span>
   </div>
   <div id="viewfinder-wrap">
     <video id="video" autoplay playsinline muted></video>
-    <img id="fallback-img" alt="captured"/>
     <svg id="grid" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <line x1="33.3" y1="0" x2="33.3" y2="100" stroke="rgba(255,255,255,.2)" stroke-width=".3"/>
       <line x1="66.6" y1="0" x2="66.6" y2="100" stroke="rgba(255,255,255,.2)" stroke-width=".3"/>
@@ -127,11 +125,11 @@ input[type=range]{flex:1;min-width:0;margin:0 2px;accent-color:#aaa}
   </div>
   <div id="cam-bar">
     <div id="upload-btn-wrap">
-      <div class="icon-btn" title="Upload photo">&#128444;</div>
+      <div class="icon-btn">&#128444;</div>
       <input type="file" id="file-input" accept="image/*">
     </div>
     <div class="shutter-ring" id="shutter"><div class="shutter-inner"></div></div>
-    <div class="icon-btn" id="flip-btn" title="Flip camera">&#8635;</div>
+    <div class="icon-btn" id="flip-btn">&#8635;</div>
   </div>
   <div id="ann-toolbar">
     <div class="tools">
@@ -146,7 +144,7 @@ input[type=range]{flex:1;min-width:0;margin:0 2px;accent-color:#aaa}
       <div class="color-dot" style="background:#185FA5" data-color="#185FA5"></div>
       <div class="color-dot" style="background:#0F6E56" data-color="#0F6E56"></div>
       <div class="color-dot" style="background:#F9CB42" data-color="#F9CB42"></div>
-      <div class="color-dot" style="background:#000000" data-color="#000000"></div>
+      <div class="color-dot" style="background:#000" data-color="#000000"></div>
       <input type="range" id="stroke-range" min="1" max="6" value="3">
       <button class="action-btn btn-retake" id="retake-btn">Retake</button>
       <button class="action-btn btn-done" id="done-btn">Done &#8594;</button>
@@ -158,21 +156,21 @@ input[type=range]{flex:1;min-width:0;margin:0 2px;accent-color:#aaa}
   </div>
 </div>
 
-<!-- Quote review screen -->
+<!-- Quote screen -->
 <div id="quote-screen">
   <div id="quote-header">
     <h2>Quote review</h2>
     <button id="new-quote-btn">+ New quote</button>
   </div>
   <div id="quote-body">
-    <img id="quote-photo" class="photo-thumb" alt="Site photo"/>
+    <img id="quote-photo" class="photo-thumb" alt="Site photo" style="display:none"/>
     <div id="line-items-wrap"></div>
     <div class="subtotal-row">
       <span>Subtotal</span>
       <span id="subtotal-val">$0.00</span>
     </div>
     <div class="discount-box">
-      <span class="li-label">Discount</span>
+      <span class="disc-label">Discount</span>
       <div class="disc-row">
         <div class="disc-toggle">
           <button id="disc-pct-btn" class="sel" onclick="setDiscType('pct')">%</button>
@@ -200,7 +198,6 @@ input[type=range]{flex:1;min-width:0;margin:0 2px;accent-color:#aaa}
 const API_URL = 'https://sz2lrfueaa.execute-api.us-west-2.amazonaws.com/prod';
 
 const video        = document.getElementById('video');
-const fallbackImg  = document.getElementById('fallback-img');
 const annCanvas    = document.getElementById('annotation-canvas');
 const snapCanvas   = document.getElementById('snap-canvas');
 const grid         = document.getElementById('grid');
@@ -215,24 +212,23 @@ const wrap         = document.getElementById('viewfinder-wrap');
 const appEl        = document.getElementById('app');
 const quoteScreen  = document.getElementById('quote-screen');
 
-let stage = 'camera';
-let tool = 'pen', color = '#E85D24', strokeW = 3;
+let stage = 'camera', tool = 'pen', color = '#E85D24', strokeW = 3;
 let drawing = false, strokes = [], currentPts = [];
 let pendingLabelPt = null;
 let stream = null, facingMode = 'environment';
 let canvasW = 0, canvasH = 0;
-let quoteData = null;
-let discType = 'pct';
+let quoteData = null, discType = 'pct';
 let lineItemState = {};
 let capturedPhotoUrl = null;
 
+// Clock
 function tick() {
   const d = new Date();
-  document.getElementById('clock').textContent =
-    d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
 }
 tick(); setInterval(tick, 15000);
 
+// Canvas resize
 function resizeCanvas() {
   canvasW = wrap.offsetWidth; canvasH = wrap.offsetHeight;
   annCanvas.width = canvasW; annCanvas.height = canvasH;
@@ -242,6 +238,7 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
+// Camera
 async function startCamera(facing) {
   if (stream) stream.getTracks().forEach(t => t.stop());
   try {
@@ -250,10 +247,9 @@ async function startCamera(facing) {
     });
     video.srcObject = stream;
     video.style.display = 'block';
-    fallbackImg.style.display = 'none';
     grid.style.display = 'block';
   } catch(e) {
-    showToast(e.name === 'NotAllowedError' ? 'Camera permission denied' : 'Camera unavailable — use the upload button');
+    showToast(e.name === 'NotAllowedError' ? 'Camera permission denied' : 'Use the upload button');
     video.style.display = 'none';
   }
 }
@@ -270,10 +266,10 @@ document.getElementById('file-input').onchange = function() {
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
-      const sCtx = snapCanvas.getContext('2d');
-      sCtx.clearRect(0,0,canvasW,canvasH);
+      const ctx = snapCanvas.getContext('2d');
+      ctx.clearRect(0,0,canvasW,canvasH);
       const scale = Math.max(canvasW/img.width, canvasH/img.height);
-      sCtx.drawImage(img, (canvasW-img.width*scale)/2, (canvasH-img.height*scale)/2, img.width*scale, img.height*scale);
+      ctx.drawImage(img,(canvasW-img.width*scale)/2,(canvasH-img.height*scale)/2,img.width*scale,img.height*scale);
       applySnapshot();
     };
     img.src = e.target.result;
@@ -282,8 +278,8 @@ document.getElementById('file-input').onchange = function() {
 };
 
 document.getElementById('shutter').onclick = () => {
-  if (!stream) { showToast('No camera — use the upload button'); return; }
-  snapCanvas.getContext('2d').drawImage(video, 0, 0, canvasW, canvasH);
+  if (!stream) { showToast('No camera — use upload'); return; }
+  snapCanvas.getContext('2d').drawImage(video,0,0,canvasW,canvasH);
   applySnapshot();
 };
 
@@ -307,6 +303,7 @@ function setStage(s) {
   annCanvas.style.pointerEvents = s === 'annotate' ? 'auto' : 'none';
 }
 
+// Tools
 document.querySelectorAll('[data-tool]').forEach(btn => {
   btn.onclick = () => {
     tool = btn.dataset.tool;
@@ -330,41 +327,37 @@ document.getElementById('retake-btn').onclick = () => {
   startCamera(facingMode);
   setStage('camera');
 };
-document.getElementById('done-btn').onclick  = () => setStage('preview');
-document.getElementById('edit-btn').onclick  = () => setStage('annotate');
+document.getElementById('done-btn').onclick = () => setStage('preview');
+document.getElementById('edit-btn').onclick = () => setStage('annotate');
 
+// Submit
 document.getElementById('submit-btn').onclick = () => {
   const out = document.createElement('canvas');
   out.width = canvasW; out.height = canvasH;
   const oCtx = out.getContext('2d');
-
-  // Draw background from the viewfinder wrap background-image
-  const bgUrl = wrap.style.backgroundImage.slice(5, -2); // strip url("...")
+  const bgUrl = wrap.style.backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
   const bgImg = new Image();
   bgImg.onload = () => {
     oCtx.drawImage(bgImg, 0, 0, canvasW, canvasH);
     oCtx.drawImage(annCanvas, 0, 0);
     capturedPhotoUrl = out.toDataURL('image/jpeg', 0.92);
     out.toBlob(blob => {
-    const fd = new FormData();
-    fd.append('photo', blob, 'quote-photo.jpg');
-    document.getElementById('submit-btn').textContent = 'Analyzing...';
-    document.getElementById('submit-btn').disabled = true;
-    fetch(API_URL + '/quote', { method:'POST', body: fd })
-      .then(r => {
-        console.log('API status:', r.status);
-        return r.json();
-      })
-      .then(data => {
-        console.log('API response:', JSON.stringify(data));
-        showQuote(data);
-      })
-      .catch(err => {
-        console.error('Fetch error:', err);
-        showToast('Upload failed — check connection');
-        document.getElementById('submit-btn').textContent = 'Generate quote';
-        document.getElementById('submit-btn').disabled = false;
-      });
+      const fd = new FormData();
+      fd.append('photo', blob, 'quote-photo.jpg');
+      document.getElementById('submit-btn').textContent = 'Analyzing...';
+      document.getElementById('submit-btn').disabled = true;
+      fetch(API_URL + '/quote', { method:'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+          console.log('Quote response:', JSON.stringify(data));
+          showQuote(data);
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          showToast('Upload failed — check connection');
+          document.getElementById('submit-btn').textContent = 'Generate quote';
+          document.getElementById('submit-btn').disabled = false;
+        });
     }, 'image/jpeg', 0.92);
   };
   bgImg.src = bgUrl;
@@ -376,14 +369,16 @@ document.getElementById('new-quote-btn').onclick = () => {
   wrap.style.backgroundImage = '';
   strokes = []; redraw();
   grid.style.display = 'block';
+  capturedPhotoUrl = null;
   document.getElementById('submit-btn').textContent = 'Generate quote';
   document.getElementById('submit-btn').disabled = false;
-  capturedPhotoUrl = null;
   startCamera(facingMode);
   setStage('camera');
 };
 
+// ── Quote review ──────────────────────────────────────
 function fmt(n) {
+  n = parseFloat(n) || 0;
   return '$' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
@@ -391,12 +386,10 @@ function showQuote(data) {
   quoteData = data;
   lineItemState = {};
 
-  // Show photo
   if (capturedPhotoUrl) {
-    document.getElementById('quote-photo').src = capturedPhotoUrl;
-    document.getElementById('quote-photo').style.display = 'block';
-  } else {
-    document.getElementById('quote-photo').style.display = 'none';
+    const img = document.getElementById('quote-photo');
+    img.src = capturedPhotoUrl;
+    img.style.display = 'block';
   }
 
   document.getElementById('disc-input').value = '';
@@ -406,161 +399,152 @@ function showQuote(data) {
   const items = data.line_items || [];
   items.forEach((item, i) => {
     lineItemState[i] = {
-      qty:        parseFloat(item.qty) || 1,
-      tier:       item.tier ?? null,
-      hours:      null,
-      unit_price: parseFloat(item.unit_price) || 0,
-      total:      parseFloat(item.total) || 0,
-      type:       item.type ?? 'per_unit',
-      flagged:    (item.confidence ?? 1) < 0.6 || (!item.tier && item.type === 'per_tier'),
-      clarifying_question: item.clarifying_question ?? null,
+      qty:       parseFloat(item.qty) || 1,
+      tier:      item.tier || null,
+      hours:     null,
+      unitPrice: parseFloat(item.unit_price) || 0,
+      total:     parseFloat(item.total) || 0,
+      type:      item.type || 'per_unit',
+      flagged:   (parseFloat(item.confidence) || 1) < 0.6,
+      question:  item.clarifying_question || null,
     };
   });
 
-  renderLineItems(items);
+  renderItems(items);
   appEl.style.display = 'none';
   quoteScreen.classList.add('show');
   recalc();
 }
 
-function renderLineItems(items) {
-  const wrap2 = document.getElementById('line-items-wrap');
-  wrap2.innerHTML = '';
+function renderItems(items) {
+  const container = document.getElementById('line-items-wrap');
+  container.innerHTML = '';
   if (!items.length) {
-    wrap2.innerHTML = '<div style="padding:20px;text-align:center;color:#888;font-size:14px">No line items detected — try a clearer photo with annotations</div>';
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:#888;font-size:14px">No items detected — try a clearer photo</div>';
     return;
   }
   items.forEach((item, i) => {
     const s = lineItemState[i];
-    const div = document.createElement('div');
-    div.className = 'line-item' + (s.flagged ? ' flagged' : '');
-    div.id = 'li-' + i;
+    const isTier  = item.type === 'per_tier';
+    const isLabor = item.type === 'time_based';
+    const step    = item.unit === 'ft' ? 5 : item.unit === 'sqft' ? 100 : 1;
 
-    const isTiered = item.type === 'per_tier';
-    const isLabor  = item.type === 'time_based';
-
-    let controlsHtml = '';
-    if (s.flagged && isTiered) {
-      controlsHtml = `<div class="tier-row">
+    let controls = '';
+    if (isTier) {
+      controls = `<div class="tier-row">
         <button class="tier-btn${s.tier==='sm'?' sel':''}" onclick="pickTier(${i},'sm')">Small</button>
         <button class="tier-btn${s.tier==='md'?' sel':''}" onclick="pickTier(${i},'md')">Medium</button>
         <button class="tier-btn${s.tier==='lg'?' sel':''}" onclick="pickTier(${i},'lg')">Large</button>
       </div>`;
-    } else if (s.flagged && isLabor) {
-      controlsHtml = `<div class="qty-row">
+    } else if (isLabor) {
+      controls = `<div class="qty-row">
         <input class="hrs-input" type="number" min="0.5" step="0.5" placeholder="hrs"
-          oninput="setHours(${i}, this.value)" value="${s.hours||''}"/>
-        <span class="qty-unit">hrs × ${s.unit_price || 65}/hr</span>
+          oninput="setHours(${i},this.value)" value="${s.hours||''}"/>
+        <span class="qty-unit">hrs × ${fmt(s.unitPrice)}/hr</span>
       </div>`;
     } else {
-      const step = item.unit === 'ft' ? 5 : item.unit === 'sqft' ? 100 : 1;
-      controlsHtml = `<div class="qty-row">
-        <button class="qty-btn" onclick="changeQty(${i},-${step})">−</button>
-        <span class="qty-val" id="qty-${i}">${s.qty}</span>
+      controls = `<div class="qty-row">
+        <button class="qty-btn" onclick="adjQty(${i},-${step})">−</button>
+        <input type="number" class="qty-input" id="qty-${i}" value="${s.qty}"
+          min="0" step="${step}" oninput="setQty(${i},this.value)"/>
         <span class="qty-unit">${item.unit||''}</span>
-        <button class="qty-btn" onclick="changeQty(${i},${step})">+</button>
+        <button class="qty-btn" onclick="adjQty(${i},${step})">+</button>
       </div>`;
     }
 
-    const subText = s.flagged
-      ? (item.clarifying_question || (isTiered ? 'Select size to price' : 'Enter hours to price'))
-      : `${s.qty} ${item.unit||''} · ${fmt(s.unit_price)} each`;
+    const needsConfirm = s.flagged && (!isTier || s.tier) && (!isLabor || s.hours);
+    const confirmHtml  = s.flagged
+      ? `<button class="confirm-btn" onclick="confirmItem(${i})">&#10003; Confirm this item</button>`
+      : '';
 
+    const subText = s.flagged
+      ? (s.question || 'Please confirm or adjust')
+      : isTier
+        ? `${['Small','Medium','Large'][['sm','md','lg'].indexOf(s.tier)]||'—'} · ${fmt(s.unitPrice)} each`
+        : isLabor
+          ? `${s.hours||'?'} hrs · ${fmt(s.unitPrice)}/hr`
+          : `${s.qty} ${item.unit||''} · ${fmt(s.unitPrice)} each`;
+
+    const div = document.createElement('div');
+    div.id = 'li-' + i;
+    div.className = 'line-item' + (s.flagged ? ' flagged' : '');
     div.innerHTML = `
-      <div class="li-row">
-        <div>
-          <div class="li-label">${item.description || item.label || item.service_code}</div>
-          <div class="li-sub${s.flagged?' warn':''}" id="lisub-${i}">${subText}</div>
-        </div>
-        <div class="li-price" id="liprice-${i}">${s.flagged ? '—' : fmt(s.total)}</div>
+      <div class="li-top">
+        <div class="li-label">${item.description || item.label || item.service_code}</div>
+        <div class="li-price" id="liprice-${i}">${fmt(s.total)}</div>
       </div>
-      ${controlsHtml}`;
-    wrap2.appendChild(div);
+      <div class="li-sub${s.flagged?' warn':''}" id="lisub-${i}">${subText}</div>
+      ${controls}
+      ${confirmHtml}`;
+    container.appendChild(div);
   });
 }
 
-function pickTier(i, tier) {
+function setQty(i, val) {
   const s = lineItemState[i];
-  const tierPrices = { sm: 25, md: 45, lg: 70 };
-  s.tier = tier;
-  s.unit_price = tierPrices[tier];
-  s.total = s.unit_price * (s.qty || 1);
-  s.flagged = false;
-  document.querySelectorAll(`#li-${i} .tier-btn`).forEach(b => b.classList.remove('sel'));
-  document.querySelector(`#li-${i} .tier-btn:nth-child(${tier==='sm'?1:tier==='md'?2:3})`).classList.add('sel');
-  document.getElementById('li-'+i).classList.remove('flagged');
-  document.getElementById('lisub-'+i).className = 'li-sub';
-  document.getElementById('lisub-'+i).textContent = `${['Small','Medium','Large'][['sm','md','lg'].indexOf(tier)]} · ${fmt(s.unit_price)} each`;
+  const n = parseFloat(val);
+  if (isNaN(n) || n < 0) return;
+  s.qty   = n;
+  s.total = Math.round(n * s.unitPrice * 100) / 100;
+  document.getElementById('liprice-'+i).textContent = fmt(s.total);
+  recalc();
+}
+
+function adjQty(i, delta) {
+  const s   = lineItemState[i];
+  const inp = document.getElementById('qty-'+i);
+  s.qty   = Math.max(0, (parseFloat(inp ? inp.value : s.qty) || 0) + delta);
+  s.total = Math.round(s.qty * s.unitPrice * 100) / 100;
+  if (inp) inp.value = s.qty;
+  document.getElementById('liprice-'+i).textContent = fmt(s.total);
+  recalc();
+}
+
+function pickTier(i, tier) {
+  const prices = { sm:25, md:45, lg:70 };
+  const s = lineItemState[i];
+  s.tier      = tier;
+  s.unitPrice = prices[tier];
+  s.total     = Math.round(s.unitPrice * (s.qty||1) * 100) / 100;
+  document.querySelectorAll(`#li-${i} .tier-btn`).forEach((b,j) => b.classList.toggle('sel', ['sm','md','lg'][j]===tier));
   document.getElementById('liprice-'+i).textContent = fmt(s.total);
   recalc();
 }
 
 function setHours(i, val) {
   const s = lineItemState[i];
-  const hrs = parseFloat(val);
-  if (!isNaN(hrs) && hrs > 0) {
-    s.hours = hrs;
-    s.total = hrs * (s.unit_price || 65);
-    s.flagged = false;
-    document.getElementById('li-'+i).classList.remove('flagged');
+  const h = parseFloat(val);
+  if (!isNaN(h) && h > 0) {
+    s.hours = h;
+    s.total = Math.round(h * s.unitPrice * 100) / 100;
     document.getElementById('liprice-'+i).textContent = fmt(s.total);
   } else {
     s.hours = null;
-    s.flagged = true;
+    s.total = 0;
     document.getElementById('liprice-'+i).textContent = '—';
   }
   recalc();
 }
 
 function confirmItem(i) {
-  const s = lineItemState[i];
+  const s    = lineItemState[i];
   const item = quoteData.line_items[i];
-  const isTiered = item.type === 'per_tier';
-  const isLabor  = item.type === 'time_based';
-
-  // For tiered items, require a tier selection first
-  if (isTiered && !s.tier) {
-    showToast('Please select a size first');
-    return;
-  }
-  // For labor items, require hours
-  if (isLabor && !s.hours) {
-    showToast('Please enter hours first');
-    return;
-  }
-
+  const isTier  = item.type === 'per_tier';
+  const isLabor = item.type === 'time_based';
+  if (isTier && !s.tier)   { showToast('Select a size first'); return; }
+  if (isLabor && !s.hours) { showToast('Enter hours first'); return; }
   s.flagged = false;
-  document.getElementById('li-'+i).classList.remove('flagged');
-  document.getElementById('lisub-'+i).className = 'li-sub';
-  document.getElementById('lisub-'+i).textContent = isTiered
-    ? `${['Small','Medium','Large'][['sm','md','lg'].indexOf(s.tier)]} · ${fmt(s.unit_price)} each`
+  const el = document.getElementById('li-'+i);
+  el.classList.remove('flagged');
+  const sub = document.getElementById('lisub-'+i);
+  sub.className = 'li-sub';
+  sub.textContent = isTier
+    ? `${['Small','Medium','Large'][['sm','md','lg'].indexOf(s.tier)]} · ${fmt(s.unitPrice)} each`
     : isLabor
-    ? `${s.hours} hrs · ${fmt(s.unit_price)}/hr`
-    : `${s.qty} ${item.unit||''} · ${fmt(s.unit_price)} each`;
+      ? `${s.hours} hrs · ${fmt(s.unitPrice)}/hr`
+      : `${s.qty} ${item.unit||''} · ${fmt(s.unitPrice)} each`;
   document.getElementById('liprice-'+i).textContent = fmt(s.total);
-  const btn = document.querySelector(`#li-${i} button[onclick="confirmItem(${i})"]`);
-  if (btn) btn.remove();
-  recalc();
-}
-
-function setQty(i, val) {
-  const s = lineItemState[i];
-  const n = parseFloat(val);
-  if (!isNaN(n) && n > 0) {
-    s.qty = n;
-    s.total = Math.round(s.qty * (s.unit_price||0) * 100) / 100;
-    document.getElementById('liprice-'+i).textContent = fmt(s.total);
-    recalc();
-  }
-}
-
-function changeQty(i, delta) {
-  const s = lineItemState[i];
-  s.qty = Math.max(0, (s.qty||0) + delta);
-  s.total = s.qty * (s.unit_price||0);
-  const input = document.getElementById('qty-'+i);
-  if (input) input.value = s.qty;
-  document.getElementById('liprice-'+i).textContent = fmt(s.total);
+  el.querySelector('.confirm-btn')?.remove();
   recalc();
 }
 
@@ -568,34 +552,26 @@ function setDiscType(t) {
   discType = t;
   document.getElementById('disc-pct-btn').classList.toggle('sel', t==='pct');
   document.getElementById('disc-dollar-btn').classList.toggle('sel', t==='dollar');
-  document.getElementById('disc-sym').textContent = t === 'pct' ? '%' : '$';
+  document.getElementById('disc-sym').textContent = t==='pct' ? '%' : '$';
   document.getElementById('disc-input').value = '';
   recalc();
 }
 
 function recalc() {
-  const states = Object.values(lineItemState);
-  const subtotal = states.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
-  const allResolved = states.every(s => !s.flagged);
-  document.getElementById('subtotal-val').textContent = fmt(subtotal);
-  const discVal = parseFloat(document.getElementById('disc-input').value);
-  let discAmt = 0;
-  if (!isNaN(discVal) && discVal > 0) {
-    discAmt = discType === 'pct'
-      ? subtotal * (Math.min(discVal,100)/100)
-      : Math.min(discVal, subtotal);
-    document.getElementById('disc-amt-val').textContent = '− ' + fmt(discAmt);
-    document.getElementById('disc-hint').textContent = discType === 'pct'
-      ? discVal + '% of ' + fmt(subtotal) : '';
-  } else {
-    document.getElementById('disc-amt-val').textContent = '—';
-    document.getElementById('disc-hint').textContent = '';
-  }
-  const total = subtotal - discAmt;
-  document.getElementById('total-val').textContent = fmt(total) + (allResolved ? '' : '+');
+  const vals    = Object.values(lineItemState);
+  const sub     = vals.reduce((acc, s) => acc + (parseFloat(s.total) || 0), 0);
+  const allDone = vals.every(s => !s.flagged);
+  document.getElementById('subtotal-val').textContent = fmt(sub);
+
+  const dv = parseFloat(document.getElementById('disc-input').value) || 0;
+  const da = dv > 0 ? (discType==='pct' ? sub*(Math.min(dv,100)/100) : Math.min(dv,sub)) : 0;
+  document.getElementById('disc-amt-val').textContent = da > 0 ? '− '+fmt(da) : '—';
+  document.getElementById('disc-hint').textContent    = (discType==='pct' && dv > 0) ? dv+'% of '+fmt(sub) : '';
+
+  document.getElementById('total-val').textContent = fmt(sub - da) + (allDone ? '' : '+');
   const btn = document.getElementById('submit-quote-btn');
-  btn.disabled = !allResolved;
-  btn.textContent = allResolved ? 'Submit quote' : 'Resolve flagged items to submit';
+  btn.disabled    = !allDone;
+  btn.textContent = allDone ? 'Submit quote' : 'Resolve flagged items to submit';
 }
 
 document.getElementById('submit-quote-btn').onclick = () => {
@@ -610,11 +586,10 @@ document.getElementById('label-cancel').onclick = () => {
 };
 document.getElementById('label-ok').onclick = placeLabel;
 labelInput.onkeydown = e => { if (e.key==='Enter') placeLabel(); };
-
 function placeLabel() {
   const txt = labelInput.value.trim();
   if (!txt || !pendingLabelPt) { labelOverlay.classList.remove('show'); labelInput.value=''; return; }
-  strokes.push({ type:'text', color, width:strokeW, text:txt, x:pendingLabelPt.x, y:pendingLabelPt.y });
+  strokes.push({type:'text',color,width:strokeW,text:txt,x:pendingLabelPt.x,y:pendingLabelPt.y});
   redraw();
   labelOverlay.classList.remove('show'); labelInput.value=''; pendingLabelPt=null;
 }
@@ -622,9 +597,8 @@ function placeLabel() {
 // ── Drawing ───────────────────────────────────────────
 function getXY(e) {
   const r = annCanvas.getBoundingClientRect();
-  const sx = canvasW/r.width, sy = canvasH/r.height;
   const src = e.touches ? e.touches[0] : e;
-  return { x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy };
+  return { x:(src.clientX-r.left)*(canvasW/r.width), y:(src.clientY-r.top)*(canvasH/r.height) };
 }
 annCanvas.addEventListener('mousedown',  onDown, {passive:false});
 annCanvas.addEventListener('touchstart', onDown, {passive:false});
@@ -643,7 +617,7 @@ function onDown(e) {
 function onMove(e) {
   if (!drawing||stage!=='annotate') return; e.preventDefault();
   currentPts.push(getXY(e)); redraw();
-  renderStroke(annCanvas.getContext('2d'), {type:tool,color,width:strokeW,pts:currentPts});
+  renderStroke(annCanvas.getContext('2d'),{type:tool,color,width:strokeW,pts:currentPts});
 }
 function onUp() {
   if (!drawing) return; drawing=false;
@@ -651,8 +625,8 @@ function onUp() {
   currentPts=[]; redraw();
 }
 function redraw() {
-  const c=annCanvas.getContext('2d'); c.clearRect(0,0,canvasW,canvasH);
-  strokes.forEach(s=>renderStroke(c,s));
+  const c = annCanvas.getContext('2d'); c.clearRect(0,0,canvasW,canvasH);
+  strokes.forEach(s => renderStroke(c,s));
 }
 function renderStroke(c,s) {
   c.lineCap='round'; c.lineJoin='round';
@@ -665,7 +639,7 @@ function renderStroke(c,s) {
   if (!s.pts||s.pts.length<2) return;
   if (s.type==='eraser') {
     c.globalCompositeOperation='destination-out'; c.strokeStyle='rgba(0,0,0,1)'; c.lineWidth=s.width*6;
-    tracePath(c,s.pts); c.stroke(); c.globalCompositeOperation='source-over'; return;
+    path(c,s.pts); c.stroke(); c.globalCompositeOperation='source-over'; return;
   }
   if (s.type==='arrow') {
     const p1=s.pts[0],p2=s.pts[s.pts.length-1],ang=Math.atan2(p2.y-p1.y,p2.x-p1.x);
@@ -673,16 +647,15 @@ function renderStroke(c,s) {
     c.beginPath(); c.moveTo(p1.x,p1.y); c.lineTo(p2.x,p2.y); c.stroke();
     c.lineWidth=s.width; c.strokeStyle=s.color;
     c.beginPath(); c.moveTo(p1.x,p1.y); c.lineTo(p2.x,p2.y); c.stroke();
-    const hs=14+s.width;
-    c.beginPath();
+    const hs=14+s.width; c.beginPath();
     c.moveTo(p2.x,p2.y); c.lineTo(p2.x-hs*Math.cos(ang-.4),p2.y-hs*Math.sin(ang-.4));
     c.moveTo(p2.x,p2.y); c.lineTo(p2.x-hs*Math.cos(ang+.4),p2.y-hs*Math.sin(ang+.4));
     c.stroke(); return;
   }
-  c.strokeStyle='rgba(0,0,0,.3)'; c.lineWidth=s.width+2; tracePath(c,s.pts); c.stroke();
-  c.strokeStyle=s.color; c.lineWidth=s.width; tracePath(c,s.pts); c.stroke();
+  c.strokeStyle='rgba(0,0,0,.3)'; c.lineWidth=s.width+2; path(c,s.pts); c.stroke();
+  c.strokeStyle=s.color; c.lineWidth=s.width; path(c,s.pts); c.stroke();
 }
-function tracePath(c,pts) {
+function path(c,pts) {
   c.beginPath(); c.moveTo(pts[0].x,pts[0].y);
   for (let i=1;i<pts.length-1;i++) {
     const mx=(pts[i].x+pts[i+1].x)/2, my=(pts[i].y+pts[i+1].y)/2;
