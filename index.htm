@@ -575,7 +575,7 @@ function setDiscType(t) {
 
 function recalc() {
   const states = Object.values(lineItemState);
-  const subtotal = states.reduce((s,i) => s + (i.total||0), 0);
+  const subtotal = states.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
   const allResolved = states.every(s => !s.flagged);
   document.getElementById('subtotal-val').textContent = fmt(subtotal);
   const discVal = parseFloat(document.getElementById('disc-input').value);
