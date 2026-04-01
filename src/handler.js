@@ -14,7 +14,8 @@ export function respond(status, body) {
 
 export const handler = async (event) => {
   const method = event.requestContext.http.method;
-  const path   = event.requestContext.http.path;
+  const rawPath = event.requestContext.http.path;
+  const path = rawPath.replace(/^\/prod/, '');
 
   try {
     if (method === 'POST' && path === '/quote')          return await quoteRoute(event);
@@ -22,7 +23,7 @@ export const handler = async (event) => {
     if (method === 'PUT'  && path === '/pricing-config') return await configRoute.put(event);
     return respond(404, { error: 'Not found' });
   } catch (err) {
-    console.error(err);
-    return respond(500, { error: err.message });
+    console.error('Handler error:', err);
+    return respond(500, { error: err.message || String(err), stack: err.stack });
   }
 };
