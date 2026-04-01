@@ -406,7 +406,7 @@ function showQuote(data) {
   const items = data.line_items || [];
   items.forEach((item, i) => {
     lineItemState[i] = {
-      qty:        item.qty ?? 1,
+      qty:        parseFloat(item.qty) || 1,
       tier:       item.tier ?? null,
       hours:      null,
       unit_price: parseFloat(item.unit_price) || 0,
@@ -546,9 +546,9 @@ function confirmItem(i) {
 function setQty(i, val) {
   const s = lineItemState[i];
   const n = parseFloat(val);
-  if (!isNaN(n) && n >= 0) {
+  if (!isNaN(n) && n > 0) {
     s.qty = n;
-    s.total = s.qty * (s.unit_price||0);
+    s.total = Math.round(s.qty * (s.unit_price||0) * 100) / 100;
     document.getElementById('liprice-'+i).textContent = fmt(s.total);
     recalc();
   }
