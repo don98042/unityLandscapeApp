@@ -71,7 +71,8 @@ input[type=range]{flex:1;min-width:0;margin:0 2px;accent-color:#aaa}
 .tier-btn.sel{border-color:#185FA5;background:#e6f1fb;color:#185FA5;font-weight:500}
 .qty-row{display:flex;align-items:center;gap:8px;margin-top:8px}
 .qty-btn{width:28px;height:28px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;color:#333;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.qty-val{min-width:36px;text-align:center;font-size:14px;font-weight:500;color:#1a1a18}
+.qty-val{min-width:52px;text-align:center;font-size:14px;font-weight:500;color:#1a1a18;padding:3px 6px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;-moz-appearance:textfield}
+.qty-val::-webkit-outer-spin-button,.qty-val::-webkit-inner-spin-button{-webkit-appearance:none}
 .qty-unit{font-size:12px;color:#888}
 .hrs-input{width:70px;padding:5px 8px;border-radius:6px;border:1px solid #ddd;background:#f5f4f0;font-size:13px;color:#1a1a18}
 .subtotal-row{display:flex;justify-content:space-between;padding:10px 12px 6px;font-size:13px;color:#888;border-top:1px solid rgba(0,0,0,.08);margin-top:4px}
@@ -513,22 +514,52 @@ function setHours(i, val) {
 
 function confirmItem(i) {
   const s = lineItemState[i];
+  const item = quoteData.line_items[i];
+  const isTiered = item.type === 'per_tier';
+  const isLabor  = item.type === 'time_based';
+
+  // For tiered items, require a tier selection first
+  if (isTiered && !s.tier) {
+    showToast('Please select a size first');
+    return;
+  }
+  // For labor items, require hours
+  if (isLabor && !s.hours) {
+    showToast('Please enter hours first');
+    return;
+  }
+
   s.flagged = false;
   document.getElementById('li-'+i).classList.remove('flagged');
   document.getElementById('lisub-'+i).className = 'li-sub';
-  document.getElementById('lisub-'+i).textContent = `${s.qty} ${quoteData.line_items[i].unit||''} · ${fmt(s.unit_price)} each`;
+  document.getElementById('lisub-'+i).textContent = isTiered
+    ? `${['Small','Medium','Large'][['sm','md','lg'].indexOf(s.tier)]} · ${fmt(s.unit_price)} each`
+    : isLabor
+    ? `${s.hours} hrs · ${fmt(s.unit_price)}/hr`
+    : `${s.qty} ${item.unit||''} · ${fmt(s.unit_price)} each`;
   document.getElementById('liprice-'+i).textContent = fmt(s.total);
-  // Remove confirm button
   const btn = document.querySelector(`#li-${i} button[onclick="confirmItem(${i})"]`);
   if (btn) btn.remove();
   recalc();
 }
 
+function setQty(i, val) {
+  const s = lineItemState[i];
+  const n = parseFloat(val);
+  if (!isNaN(n) && n >= 0) {
+    s.qty = n;
+    s.total = s.qty * (s.unit_price||0);
+    document.getElementById('liprice-'+i).textContent = fmt(s.total);
+    recalc();
+  }
+}
+
 function changeQty(i, delta) {
   const s = lineItemState[i];
-  s.qty = Math.max(0, (s.qty||1) + delta);
+  s.qty = Math.max(0, (s.qty||0) + delta);
   s.total = s.qty * (s.unit_price||0);
-  document.getElementById('qty-'+i).textContent = s.qty;
+  const input = document.getElementById('qty-'+i);
+  if (input) input.value = s.qty;
   document.getElementById('liprice-'+i).textContent = fmt(s.total);
   recalc();
 }
