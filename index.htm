@@ -35,7 +35,7 @@ input[type=range]{flex:1;margin:0 2px;accent-color:#aaa}
 .action-btn{padding:6px 11px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none}
 .btn-retake{background:#2a2a2a;color:#aaa}
 .btn-done{background:#2d5c14;color:#a0d060}
-#preview-bar{background:#111;padding:10px 16px 28px;display:flex;gap:8px;flex-shrink:0;display:none}
+#preview-bar{background:#111;padding:10px 16px 28px;display:flex;gap:8px;flex-shrink:0}
 .btn-edit{flex:1;padding:12px 0;border-radius:9px;border:1px solid #555;background:transparent;color:#ccc;font-size:14px;cursor:pointer}
 .btn-submit{flex:2;padding:12px 0;border-radius:9px;border:1px solid #4a8820;background:#2d5c14;color:#a0d060;font-size:14px;font-weight:600;cursor:pointer}
 #label-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;z-index:10}
@@ -56,14 +56,14 @@ input[type=range]{flex:1;margin:0 2px;accent-color:#aaa}
 #quote-header{background:#fff;padding:14px 16px 10px;border-bottom:1px solid rgba(0,0,0,.08);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
 #quote-header h2{font-size:17px;font-weight:600}
 #new-quote-btn{font-size:13px;color:#185FA5;background:none;border:none;cursor:pointer;padding:4px 0}
-#quote-body{flex:1;overflow-y:auto;padding:12px 14px}
-.photo-thumb{width:100%;height:160px;object-fit:cover;border-radius:10px;margin-bottom:12px}
+#quote-body{flex:1;overflow-y:auto;padding:12px 14px;-webkit-overflow-scrolling:touch}
+.photo-thumb{width:100%;height:160px;object-fit:cover;border-radius:10px;margin-bottom:12px;background:#ddd}
 .section-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;padding:8px 0 4px}
 .line-item{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:11px 12px;margin-bottom:6px}
 .line-item.flagged{background:#fff8ed;border-color:#f0a500}
 .li-row{display:flex;justify-content:space-between;align-items:flex-start}
-.li-label{font-size:14px;font-weight:500}
-.li-price{font-size:14px;font-weight:600;min-width:64px;text-align:right}
+.li-label{font-size:14px;font-weight:500;color:#1a1a18}
+.li-price{font-size:14px;font-weight:600;min-width:64px;text-align:right;color:#1a1a18}
 .li-sub{font-size:12px;color:#888;margin-top:2px}
 .li-sub.warn{color:#b07800}
 .tier-row{display:flex;gap:6px;margin-top:8px}
@@ -338,8 +338,7 @@ document.getElementById('submit-btn').onclick = () => {
   const oCtx = out.getContext('2d');
   oCtx.drawImage(snapCanvas, 0, 0);
   oCtx.drawImage(annCanvas, 0, 0);
-  const photoUrl = out.toDataURL('image/jpeg', 0.92);
-  capturedPhotoUrl = photoUrl;
+  capturedPhotoUrl = out.toDataURL('image/jpeg', 0.92);
   out.toBlob(blob => {
     const fd = new FormData();
     fd.append('photo', blob, 'quote-photo.jpg');
@@ -352,7 +351,7 @@ document.getElementById('submit-btn').onclick = () => {
       })
       .then(data => {
         console.log('API response:', JSON.stringify(data));
-        showQuote(data, capturedPhotoUrl);
+        showQuote(data);
       })
       .catch(err => {
         console.error('Fetch error:', err);
@@ -371,19 +370,27 @@ document.getElementById('new-quote-btn').onclick = () => {
   grid.style.display = 'block';
   document.getElementById('submit-btn').textContent = 'Generate quote';
   document.getElementById('submit-btn').disabled = false;
+  capturedPhotoUrl = null;
   startCamera(facingMode);
   setStage('camera');
 };
 
-// ── Quote review ──────────────────────────────────────
 function fmt(n) {
   return '$' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
-function showQuote(data, photoUrl) {
+function showQuote(data) {
   quoteData = data;
   lineItemState = {};
-  document.getElementById('quote-photo').src = photoUrl;
+
+  // Show photo
+  if (capturedPhotoUrl) {
+    document.getElementById('quote-photo').src = capturedPhotoUrl;
+    document.getElementById('quote-photo').style.display = 'block';
+  } else {
+    document.getElementById('quote-photo').style.display = 'none';
+  }
+
   document.getElementById('disc-input').value = '';
   document.getElementById('disc-amt-val').textContent = '—';
   document.getElementById('disc-hint').textContent = '';
@@ -391,13 +398,13 @@ function showQuote(data, photoUrl) {
   const items = data.line_items || [];
   items.forEach((item, i) => {
     lineItemState[i] = {
-      qty: item.qty ?? 1,
-      tier: item.tier ?? null,
-      hours: null,
-      unit_price: item.unit_price,
-      total: item.total,
-      type: item.type ?? 'per_unit',
-      flagged: (item.confidence ?? 1) < 0.6 || (!item.tier && item.type === 'per_tier'),
+      qty:        item.qty ?? 1,
+      tier:       item.tier ?? null,
+      hours:      null,
+      unit_price: parseFloat(item.unit_price) || 0,
+      total:      parseFloat(item.total) || 0,
+      type:       item.type ?? 'per_unit',
+      flagged:    (item.confidence ?? 1) < 0.6 || (!item.tier && item.type === 'per_tier'),
       clarifying_question: item.clarifying_question ?? null,
     };
   });
@@ -411,14 +418,18 @@ function showQuote(data, photoUrl) {
 function renderLineItems(items) {
   const wrap2 = document.getElementById('line-items-wrap');
   wrap2.innerHTML = '';
+  if (!items.length) {
+    wrap2.innerHTML = '<div style="padding:20px;text-align:center;color:#888;font-size:14px">No line items detected — try a clearer photo with annotations</div>';
+    return;
+  }
   items.forEach((item, i) => {
     const s = lineItemState[i];
     const div = document.createElement('div');
     div.className = 'line-item' + (s.flagged ? ' flagged' : '');
     div.id = 'li-' + i;
 
-    const isTiered  = item.type === 'per_tier' || (!item.unit_price && item.tier !== undefined);
-    const isLabor   = item.type === 'time_based';
+    const isTiered = item.type === 'per_tier';
+    const isLabor  = item.type === 'time_based';
 
     let controlsHtml = '';
     if (s.flagged && isTiered) {
@@ -431,7 +442,7 @@ function renderLineItems(items) {
       controlsHtml = `<div class="qty-row">
         <input class="hrs-input" type="number" min="0.5" step="0.5" placeholder="hrs"
           oninput="setHours(${i}, this.value)" value="${s.hours||''}"/>
-        <span class="qty-unit">hrs × $${item.unit_price ?? 65}/hr</span>
+        <span class="qty-unit">hrs × $${s.unit_price || 65}/hr</span>
       </div>`;
     } else {
       const step = item.unit === 'ft' ? 5 : item.unit === 'sqft' ? 100 : 1;
@@ -445,7 +456,7 @@ function renderLineItems(items) {
 
     const subText = s.flagged
       ? (item.clarifying_question || (isTiered ? 'Select size to price' : 'Enter hours to price'))
-      : `${s.qty} ${item.unit||''} · ${fmt(item.unit_price||0)} each`;
+      : `${s.qty} ${item.unit||''} · ${fmt(s.unit_price)} each`;
 
     div.innerHTML = `
       <div class="li-row">
@@ -453,7 +464,7 @@ function renderLineItems(items) {
           <div class="li-label">${item.description || item.label || item.service_code}</div>
           <div class="li-sub${s.flagged?' warn':''}" id="lisub-${i}">${subText}</div>
         </div>
-        <div class="li-price" id="liprice-${i}">${s.flagged?'—':fmt(s.total)}</div>
+        <div class="li-price" id="liprice-${i}">${s.flagged ? '—' : fmt(s.total)}</div>
       </div>
       ${controlsHtml}`;
     wrap2.appendChild(div);
@@ -515,9 +526,7 @@ function recalc() {
   const states = Object.values(lineItemState);
   const subtotal = states.reduce((s,i) => s + (i.total||0), 0);
   const allResolved = states.every(s => !s.flagged);
-
   document.getElementById('subtotal-val').textContent = fmt(subtotal);
-
   const discVal = parseFloat(document.getElementById('disc-input').value);
   let discAmt = 0;
   if (!isNaN(discVal) && discVal > 0) {
@@ -531,10 +540,8 @@ function recalc() {
     document.getElementById('disc-amt-val').textContent = '—';
     document.getElementById('disc-hint').textContent = '';
   }
-
   const total = subtotal - discAmt;
-  document.getElementById('total-val').textContent = fmt(total) + (allResolved?'':'+');
-
+  document.getElementById('total-val').textContent = fmt(total) + (allResolved ? '' : '+');
   const btn = document.getElementById('submit-quote-btn');
   btn.disabled = !allResolved;
   btn.textContent = allResolved ? 'Submit quote' : 'Resolve flagged items to submit';
