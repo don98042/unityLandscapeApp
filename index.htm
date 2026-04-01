@@ -449,7 +449,7 @@ function renderLineItems(items) {
       controlsHtml = `<div class="qty-row">
         <input class="hrs-input" type="number" min="0.5" step="0.5" placeholder="hrs"
           oninput="setHours(${i}, this.value)" value="${s.hours||''}"/>
-        <span class="qty-unit">hrs × $${s.unit_price || 65}/hr</span>
+        <span class="qty-unit">hrs × ${s.unit_price || 65}/hr</span>
       </div>`;
     } else {
       const step = item.unit === 'ft' ? 5 : item.unit === 'sqft' ? 100 : 1;
@@ -508,6 +508,19 @@ function setHours(i, val) {
     s.flagged = true;
     document.getElementById('liprice-'+i).textContent = '—';
   }
+  recalc();
+}
+
+function confirmItem(i) {
+  const s = lineItemState[i];
+  s.flagged = false;
+  document.getElementById('li-'+i).classList.remove('flagged');
+  document.getElementById('lisub-'+i).className = 'li-sub';
+  document.getElementById('lisub-'+i).textContent = `${s.qty} ${quoteData.line_items[i].unit||''} · ${fmt(s.unit_price)} each`;
+  document.getElementById('liprice-'+i).textContent = fmt(s.total);
+  // Remove confirm button
+  const btn = document.querySelector(`#li-${i} button[onclick="confirmItem(${i})"]`);
+  if (btn) btn.remove();
   recalc();
 }
 
